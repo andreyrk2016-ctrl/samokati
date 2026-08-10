@@ -52,7 +52,6 @@ def main() -> int:
         output=str(DOWNLOAD_DIR),
         quiet=False,
         use_cookies=False,
-        remaining_ok=True,
     )
     if not result:
         print("ОШИБКА: не удалось скачать папку. Проверьте, что папка CSD на "
