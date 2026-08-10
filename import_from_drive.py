@@ -24,6 +24,7 @@ from collections import defaultdict
 from pathlib import Path
 
 import gdown
+import requests
 from PIL import Image
 
 DRIVE_FOLDER_ID = "1ZSCKgmYmVNCdaM7_OqLqWIBxLJFRCYLV"
@@ -73,8 +74,29 @@ def compress_image(source: Path, target: Path) -> None:
         img.save(target, "JPEG", quality=JPEG_QUALITY, optimize=True)
 
 
-def download_one(file_id: str, tmp_path: Path) -> bool:
+def download_thumbnail(file_id: str, tmp_path: Path) -> bool:
+    """Миниатюра Google Диска (до 1200px) — отдельный канал, который
+    обычно не попадает под лимиты массового скачивания."""
+    url = f"https://drive.google.com/thumbnail?id={file_id}&sz=w{MAX_SIDE}"
+    for attempt in (1, 2):
+        try:
+            response = requests.get(url, timeout=60, allow_redirects=True)
+            content_type = response.headers.get("content-type", "")
+            if (response.status_code == 200 and content_type.startswith("image/")
+                    and len(response.content) > 5000):
+                tmp_path.write_bytes(response.content)
+                return True
+        except Exception as error:
+            print(f"    миниатюра, попытка {attempt}: {error}")
+        time.sleep(3)
+    return False
+
+
+def download_one(file_id: str, tmp_path: Path, is_image: bool) -> bool:
     tmp_path.parent.mkdir(parents=True, exist_ok=True)
+    # Для картинок сначала пробуем миниатюру — быстро и без лимитов.
+    if is_image and download_thumbnail(file_id, tmp_path):
+        return True
     for attempt in range(1, RETRIES + 1):
         try:
             result = gdown.download(id=file_id, output=str(tmp_path),
@@ -131,7 +153,7 @@ def main() -> int:
     for file_id, filename, target, is_image in todo:
         tmp_path = DOWNLOAD_DIR / "tmp" / filename
         print(f"  {target.parent.name} / {filename}")
-        if not download_one(file_id, tmp_path):
+        if not download_one(file_id, tmp_path, is_image):
             failed += 1
             print("    НЕ СКАЧАЛСЯ — заберём при следующем запуске")
             continue
