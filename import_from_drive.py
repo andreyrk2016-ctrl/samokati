@@ -4,16 +4,23 @@
 Импорт товаров из папки CSD на Google Диске в папку csd/ репозитория.
 
 Папка на Диске должна быть открыта «всем, у кого есть ссылка» (просмотр).
-Скрипт скачивает все подпапки с товарами, сжимает фотографии
-(скриншоты по 5–8 МБ превращаются в JPEG ~1200px по длинной стороне)
-и раскладывает результат в csd/<название товара>/.
 
-Запускается автоматически через GitHub Actions (import-drive.yml).
+Скрипт работает бережно к лимитам Google: получает список файлов, потом
+скачивает их ПО ОДНОМУ с паузами и повторными попытками. Уже скачанное
+пропускается, поэтому при сбое достаточно запустить импорт ещё раз —
+он дозаберёт остальное.
+
+Фотографии сжимаются (скриншоты по 5–8 МБ превращаются в JPEG до 1200px),
+берётся не больше 6 фото на товар. Результат: csd/<название товара>/.
+
+Запускается через GitHub Actions (import-drive.yml).
 """
 
 import re
 import shutil
 import sys
+import time
+from collections import defaultdict
 from pathlib import Path
 
 import gdown
@@ -23,78 +30,132 @@ DRIVE_FOLDER_ID = "1ZSCKgmYmVNCdaM7_OqLqWIBxLJFRCYLV"
 ROOT = Path(__file__).resolve().parent
 DOWNLOAD_DIR = ROOT / "_drive_csd"
 TARGET_DIR = ROOT / "csd"
-KEEP_FILES = {"ПРОЧИТАЙ-МЕНЯ.txt"}
 
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
+TEXT_EXTS = {".txt", ".url", ".md", ".website"}
+MAX_IMAGES_PER_PRODUCT = 6
 MAX_SIDE = 1200
 JPEG_QUALITY = 82
+DOWNLOAD_PAUSE = 1.5      # пауза между файлами, сек
+RETRIES = 3               # попыток на файл
+RETRY_PAUSE = 25          # пауза перед повторной попыткой, сек
 
 
-def natural_key(path: Path):
+def natural_key(name: str):
     return [int(part) if part.isdigit() else part.casefold()
-            for part in re.split(r"(\d+)", path.name)]
+            for part in re.split(r"(\d+)", name)]
+
+
+def list_drive_files():
+    """Список файлов папки на Диске (без скачивания), с повторами."""
+    for attempt in range(1, RETRIES + 1):
+        try:
+            entries = gdown.download_folder(
+                id=DRIVE_FOLDER_ID,
+                output=str(DOWNLOAD_DIR),
+                skip_download=True,
+                quiet=True,
+                use_cookies=False,
+            )
+            if entries:
+                return entries
+        except Exception as error:
+            print(f"Не удалось получить список файлов (попытка {attempt}): {error}")
+        time.sleep(RETRY_PAUSE)
+    return None
 
 
 def compress_image(source: Path, target: Path) -> None:
     with Image.open(source) as img:
         img = img.convert("RGB")
         img.thumbnail((MAX_SIDE, MAX_SIDE), Image.LANCZOS)
+        target.parent.mkdir(parents=True, exist_ok=True)
         img.save(target, "JPEG", quality=JPEG_QUALITY, optimize=True)
 
 
+def download_one(file_id: str, tmp_path: Path) -> bool:
+    tmp_path.parent.mkdir(parents=True, exist_ok=True)
+    for attempt in range(1, RETRIES + 1):
+        try:
+            result = gdown.download(id=file_id, output=str(tmp_path),
+                                    quiet=True, use_cookies=False)
+            if result and tmp_path.exists() and tmp_path.stat().st_size > 0:
+                return True
+        except Exception as error:
+            print(f"    попытка {attempt} не удалась: {error}")
+        if attempt < RETRIES:
+            time.sleep(RETRY_PAUSE)
+    return False
+
+
 def main() -> int:
-    if DOWNLOAD_DIR.exists():
-        shutil.rmtree(DOWNLOAD_DIR)
-
-    print(f"Скачиваю папку CSD с Google Диска (id={DRIVE_FOLDER_ID})...")
-    result = gdown.download_folder(
-        id=DRIVE_FOLDER_ID,
-        output=str(DOWNLOAD_DIR),
-        quiet=False,
-        use_cookies=False,
-    )
-    if not result:
-        print("ОШИБКА: не удалось скачать папку. Проверьте, что папка CSD на "
-              "Google Диске открыта «всем, у кого есть ссылка».")
+    print(f"Получаю список файлов папки CSD (id={DRIVE_FOLDER_ID})...")
+    entries = list_drive_files()
+    if not entries:
+        print("ОШИБКА: не удалось получить список файлов. Проверьте, что папка "
+              "CSD открыта «всем, у кого есть ссылка», и запустите импорт позже.")
         return 1
 
-    product_dirs = sorted((d for d in DOWNLOAD_DIR.iterdir() if d.is_dir()),
-                          key=natural_key)
-    if not product_dirs:
-        print("ОШИБКА: в скачанной папке нет подпапок с товарами.")
-        return 1
+    # Группируем файлы по товарам (первая часть относительного пути).
+    products = defaultdict(list)
+    for entry in entries:
+        relative = Path(entry.local_path).relative_to(DOWNLOAD_DIR)
+        if len(relative.parts) < 2:
+            continue  # файл в корне папки CSD — не товар
+        product = relative.parts[0].strip()
+        products[product].append((entry.id, relative.parts[-1]))
 
-    # Очищаем старое содержимое csd/, кроме служебных файлов.
+    print(f"Найдено товаров: {len(products)}")
     TARGET_DIR.mkdir(exist_ok=True)
-    for item in TARGET_DIR.iterdir():
-        if item.name in KEEP_FILES:
-            continue
-        shutil.rmtree(item) if item.is_dir() else item.unlink()
 
-    total_images = 0
-    for src_dir in product_dirs:
-        dst_dir = TARGET_DIR / src_dir.name.strip()
-        dst_dir.mkdir(parents=True, exist_ok=True)
+    planned = []  # (file_id, имя файла на Диске, конечный путь, это фото?)
+    for product, files in sorted(products.items(), key=lambda p: natural_key(p[0])):
+        files.sort(key=lambda item: natural_key(item[1]))
         image_index = 0
-        for file in sorted(src_dir.iterdir(), key=natural_key):
-            if not file.is_file():
-                continue
-            suffix = file.suffix.lower()
-            if suffix in IMAGE_EXTS:
+        for file_id, filename in files:
+            suffix = Path(filename).suffix.lower()
+            if suffix in IMAGE_EXTS and image_index < MAX_IMAGES_PER_PRODUCT:
                 image_index += 1
-                target = dst_dir / f"{image_index:02d}.jpg"
-                try:
-                    compress_image(file, target)
-                    total_images += 1
-                except Exception as error:  # битый файл — пропускаем
-                    print(f"  пропущено {file.name}: {error}")
-            elif suffix in {".txt", ".url", ".md", ".website"}:
-                shutil.copyfile(file, dst_dir / file.name)
-        print(f"  {src_dir.name}: {image_index} фото")
+                target = TARGET_DIR / product / f"{image_index:02d}.jpg"
+                planned.append((file_id, filename, target, True))
+            elif suffix in TEXT_EXTS:
+                target = TARGET_DIR / product / filename
+                planned.append((file_id, filename, target, False))
 
-    shutil.rmtree(DOWNLOAD_DIR)
-    print(f"Готово: {len(product_dirs)} товаров, {total_images} фото (сжаты до "
-          f"{MAX_SIDE}px JPEG).")
+    todo = [item for item in planned if not item[2].exists()]
+    print(f"Файлов в плане: {len(planned)}, уже скачано: "
+          f"{len(planned) - len(todo)}, осталось: {len(todo)}")
+
+    downloaded = 0
+    failed = 0
+    for file_id, filename, target, is_image in todo:
+        tmp_path = DOWNLOAD_DIR / "tmp" / filename
+        print(f"  {target.parent.name} / {filename}")
+        if not download_one(file_id, tmp_path):
+            failed += 1
+            print("    НЕ СКАЧАЛСЯ — заберём при следующем запуске")
+            continue
+        try:
+            if is_image:
+                compress_image(tmp_path, target)
+            else:
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(tmp_path, target)
+            downloaded += 1
+        except Exception as error:
+            failed += 1
+            print(f"    файл повреждён, пропускаю: {error}")
+        finally:
+            tmp_path.unlink(missing_ok=True)
+        time.sleep(DOWNLOAD_PAUSE)
+
+    shutil.rmtree(DOWNLOAD_DIR, ignore_errors=True)
+    print(f"Итог: скачано сейчас {downloaded}, не удалось {failed}, "
+          f"всего готово {len(planned) - len(todo) + downloaded} из {len(planned)}.")
+    if failed:
+        print("Часть файлов Google не отдал (лимит скачиваний). Запустите "
+              "импорт ещё раз через 10–30 минут — он дозаберёт остальное.")
+    # Частичный результат — тоже результат: коммитим то, что скачалось.
     return 0
 
 
