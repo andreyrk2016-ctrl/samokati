@@ -202,6 +202,34 @@ def collect_products(base: Path):
     return products
 
 
+# Пересчёт цен из юаней в доллары
+# (файл prices.json: {"название товара как на сайте": цена_в_юанях}).
+YUAN_PER_USD = 7.2   # курс юаня к доллару
+MARKUP = 1.0         # наценка: 1.0 = без наценки, 1.3 = +30%
+
+
+def load_yuan_prices():
+    prices_file = ROOT / "prices.json"
+    if not prices_file.exists():
+        return {}
+    try:
+        return json.loads(prices_file.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def apply_yuan_prices(products):
+    yuan_prices = load_yuan_prices()
+    if not yuan_prices:
+        return
+    for product in products:
+        if product["price"] is not None:
+            continue
+        yuan = yuan_prices.get(product["name"])
+        if isinstance(yuan, (int, float)) and yuan > 0:
+            product["price"] = round(yuan / YUAN_PER_USD * MARKUP)
+
+
 def main():
     source = ROOT / "csd"
     products = collect_products(source)
@@ -209,6 +237,7 @@ def main():
     if not products:
         products = collect_products(ROOT / "csd-demo")
         demo = True
+    apply_yuan_prices(products)
 
     products.sort(key=lambda p: (p["category"] != "Самокаты",
                                  p["category"].casefold(),

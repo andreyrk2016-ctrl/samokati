@@ -37,5 +37,6 @@ jobs:
             echo "Изменений нет"
           else
             git commit -m "Импорт товаров из папки CSD на Google Диске"
+            git pull --rebase origin "${GITHUB_REF_NAME}" || true
             git push
           fi
