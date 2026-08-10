@@ -3,7 +3,11 @@
     "cover": "04.jpg",
     "skip": [
       "05.jpg",
-      "06.jpg"
+      "06.jpg",
+      "07.jpg",
+      "08.jpg",
+      "09.jpg",
+      "10.jpg"
     ]
   },
   "CSD极限滑板车Steel3钢炮筒火箭筒顶配配件耐磨耐摔专业SCOOTER": {
@@ -19,7 +23,9 @@
   "CSD极限滑板车底板Newborn顶配工艺街式宽大设计专业SCOOTER": {
     "skip": [
       "05.jpg",
-      "06.jpg"
+      "06.jpg",
+      "07.jpg",
+      "08.jpg"
     ]
   },
   "CSD极限滑板车把套Briers细纹软胶舒适耐磨配件BMX单车SCOOTER": {
@@ -71,7 +77,9 @@
     "cover": "04.jpg",
     "skip": [
       "05.jpg",
-      "06.jpg"
+      "06.jpg",
+      "07.jpg",
+      "08.jpg"
     ]
   },
   "Native极限滑板车前叉Format顶配配件专业SCOOTER": {
@@ -82,7 +90,10 @@
   "Native极限滑板车底板Format顶配宽大专业SCOOTER": {
     "cover": "02.jpg",
     "skip": [
-      "05.jpg"
+      "05.jpg",
+      "10.jpg",
+      "11.jpg",
+      "12.jpg"
     ]
   },
   "Native极限滑板车底板Stem高配街道设计专业SCOOTER": {
@@ -119,18 +130,24 @@
   "North极限滑板车底板Unity签名JonRyan顶配超宽街式专业SCOOTER": {
     "skip": [
       "05.jpg",
-      "06.jpg"
+      "06.jpg",
+      "07.jpg",
+      "08.jpg",
+      "09.jpg"
     ]
   },
   "North极限滑板车底板Unity签名WilliamHolm顶配宽大专业SCOOTER": {
     "skip": [
-      "06.jpg"
+      "06.jpg",
+      "07.jpg",
+      "08.jpg"
     ]
   },
   "North极限滑板车底板Willow顶配工艺街式宽大设计专业SCOOTER": {
     "skip": [
       "05.jpg",
-      "06.jpg"
+      "06.jpg",
+      "07.jpg"
     ]
   },
   "North极限滑板车把套Tree细纹软胶舒适耐磨配件BMX单车SCOOTER": {
@@ -147,13 +164,18 @@
     "cover": "01.jpg",
     "skip": [
       "05.jpg",
-      "06.jpg"
+      "06.jpg",
+      "07.jpg",
+      "08.jpg",
+      "09.jpg"
     ]
   },
   "极限滑板车CSD标配整车CUB入门初学动作代步竞技专业SCOOTER": {
     "cover": "05.jpg",
     "skip": [
-      "06.jpg"
+      "06.jpg",
+      "07.jpg",
+      "08.jpg"
     ]
   },
   "极限滑板车CSD砂纸Clogo防滑贴密集沙砾加厚耐磨粘脚双翘SCOOTER": {
@@ -170,12 +192,19 @@
     "cover": "03.jpg",
     "skip": [
       "05.jpg",
-      "06.jpg"
+      "06.jpg",
+      "07.jpg",
+      "08.jpg"
     ]
   },
   "极限滑板车前叉Native前叉Senary顶配工艺7075铝材专业SCOOTER": {
     "skip": [
       "05.jpg"
+    ]
+  },
+  "极限滑板车运动入门护具护肘护膝护腕头盔安全耐磨专业SCOOTER": {
+    "skip": [
+      "07.jpg"
     ]
   }
 }
