@@ -42,6 +42,41 @@ CAT_RE = re.compile(r"(?:категория|category)\s*[:=]\s*(.+)", re.IGNOREC
 
 PARTS_NAMES = {"запчасти", "запчасть", "parts", "зч", "комплектующие"}
 
+# Автоопределение категории по ключевым словам в названии папки
+# (для товаров с китайских маркетплейсов вроде Taobao/1688).
+NAME_CATEGORIES = [
+    ("整车", "Самокаты"),
+    ("轮子", "Колёса"),
+    ("底板", "Деки"),
+    ("车把", "Рули и грипсы"),
+    ("把套", "Рули и грипсы"),
+    ("把夹", "Рули и грипсы"),
+    ("前叉", "Вилки"),
+    ("护具", "Защита"),
+    ("头盔", "Защита"),
+    ("碗组", "Запчасти"),
+    ("刹车", "Запчасти"),
+    ("砂纸", "Запчасти"),
+    ("蜡", "Запчасти"),
+    ("垫圈", "Запчасти"),
+    ("钢炮", "Запчасти"),
+]
+
+# Служебный хвост в имени папки вида «-750y» (внутренняя пометка цены) —
+# на сайте не показывается.
+PRICE_TAIL_RE = re.compile(r"[-–—]\s*\d+\s*[yYуУ]$")
+
+
+def display_name(raw: str) -> str:
+    return PRICE_TAIL_RE.sub("", raw.strip()).strip()
+
+
+def category_from_name(name: str):
+    for keyword, category in NAME_CATEGORIES:
+        if keyword in name:
+            return category
+    return None
+
 
 def natural_key(value):
     """Ключ для «человеческой» сортировки: фото2 раньше, чем фото10."""
@@ -81,6 +116,8 @@ def parse_meta(folder: Path) -> dict:
         text = read_text_smart(file)
         if not text:
             continue
+        file_has_url = False
+        file_leftovers = []
         for line in text.splitlines():
             line = line.strip()
             if not line:
@@ -89,8 +126,10 @@ def parse_meta(folder: Path) -> dict:
             price = PRICE_RE.search(line)
             desc = DESC_RE.search(line)
             cat = CAT_RE.search(line)
-            if url and not meta["link"]:
-                meta["link"] = url.group(0).rstrip(".,);")
+            if url:
+                file_has_url = True
+                if not meta["link"]:
+                    meta["link"] = url.group(0).rstrip(".,);")
             if price and meta["price"] is None:
                 meta["price"] = parse_price(price.group(1))
             if desc and not meta["description"]:
@@ -98,7 +137,11 @@ def parse_meta(folder: Path) -> dict:
             if cat and not meta["category"]:
                 meta["category"] = cat.group(1).strip()
             if not (url or price or desc or cat) and not line.lower().startswith(("[internetshortcut]", "iconindex", "iconfile")):
-                leftovers.append(line)
+                file_leftovers.append(line)
+        # Файл со ссылкой (например, шаблон «поделиться» с Taobao) — служебный
+        # текст из него в описание не берём.
+        if not file_has_url:
+            leftovers.extend(file_leftovers)
     if not meta["description"] and leftovers:
         meta["description"] = " ".join(leftovers)[:300].strip()
     return meta
@@ -135,9 +178,10 @@ def collect_products(base: Path):
                    if d.is_dir() and not d.name.startswith((".", "_"))]
 
         if images or meta["link"]:
-            resolved_category = meta["category"] or category or "Самокаты"
+            resolved_category = (meta["category"] or category
+                                 or category_from_name(folder.name) or "Самокаты")
             products.append({
-                "name": folder.name.strip(),
+                "name": display_name(folder.name),
                 "category": normalize_category(resolved_category),
                 "images": [quote(f.relative_to(ROOT).as_posix())
                            for f in images[:MAX_IMAGES_PER_PRODUCT]],
