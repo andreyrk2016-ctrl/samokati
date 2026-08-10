@@ -1,0 +1,73 @@
+// Файл создан автоматически скриптом build_catalog.py — не редактируйте вручную.
+window.CATALOG = {
+  "demo": true,
+  "products": [
+    {
+      "name": "Fox Pro Raw 03",
+      "category": "Самокаты",
+      "images": [
+        "csd-demo/Fox%20Pro%20Raw%2003/%D1%84%D0%BE%D1%82%D0%BE.svg"
+      ],
+      "link": "https://example.com/fox-pro-raw-03",
+      "price": 14990,
+      "description": "Лёгкий и манёвренный самокат для первых трюков. Алюминиевая дека, HIC-компрессия.",
+      "id": 0
+    },
+    {
+      "name": "Tech Team Duker 404",
+      "category": "Самокаты",
+      "images": [
+        "csd-demo/Tech%20Team%20Duker%20404/%D1%84%D0%BE%D1%82%D0%BE.svg"
+      ],
+      "link": "https://example.com/tech-team-duker-404",
+      "price": 16490,
+      "description": "Надёжный самокат для начинающих райдеров. Усиленная дека, колёса 110 мм, вес 3.6 кг.",
+      "id": 1
+    },
+    {
+      "name": "Urban Artt Primo Evo",
+      "category": "Самокаты",
+      "images": [
+        "csd-demo/Urban%20Artt%20Primo%20Evo/%D1%84%D0%BE%D1%82%D0%BE-1.svg",
+        "csd-demo/Urban%20Artt%20Primo%20Evo/%D1%84%D0%BE%D1%82%D0%BE-2.svg"
+      ],
+      "link": "https://example.com/urban-artt-primo-evo",
+      "price": 34990,
+      "description": "Профессиональный трюковой самокат для парка и улицы. Дека 4.9\", руль 620 мм, колёса 110 мм.",
+      "id": 2
+    },
+    {
+      "name": "Дека Striker Lux 4.8",
+      "category": "Запчасти",
+      "images": [
+        "csd-demo/%D0%97%D0%B0%D0%BF%D1%87%D0%B0%D1%81%D1%82%D0%B8/%D0%94%D0%B5%D0%BA%D0%B0%20Striker%20Lux%204.8/%D1%84%D0%BE%D1%82%D0%BE.svg"
+      ],
+      "link": "https://example.com/striker-lux-deck",
+      "price": 8990,
+      "description": "Дека 4.8\" x 20.5\" из алюминия 6061-T6. Шкурка в комплекте, вес 1.35 кг.",
+      "id": 3
+    },
+    {
+      "name": "Колёса CORE Hollow 110 мм (пара)",
+      "category": "Запчасти",
+      "images": [
+        "csd-demo/%D0%97%D0%B0%D0%BF%D1%87%D0%B0%D1%81%D1%82%D0%B8/%D0%9A%D0%BE%D0%BB%D1%91%D1%81%D0%B0%20CORE%20Hollow%20110%20%D0%BC%D0%BC%20%28%D0%BF%D0%B0%D1%80%D0%B0%29/%D1%84%D0%BE%D1%82%D0%BE.svg"
+      ],
+      "link": "https://example.com/core-hollow-110",
+      "price": 4590,
+      "description": "Пара колёс 110 мм с литым алюминиевым сердечником. Подшипники ABEC-9 в комплекте.",
+      "id": 4
+    },
+    {
+      "name": "Руль HIC Т-образный 620 мм",
+      "category": "Запчасти",
+      "images": [
+        "csd-demo/%D0%97%D0%B0%D0%BF%D1%87%D0%B0%D1%81%D1%82%D0%B8/%D0%A0%D1%83%D0%BB%D1%8C%20HIC%20%D0%A2-%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D0%BD%D1%8B%D0%B9%20620%20%D0%BC%D0%BC/%D1%84%D0%BE%D1%82%D0%BE.svg"
+      ],
+      "link": "https://example.com/hic-bar-620",
+      "price": 5990,
+      "description": "Хромомолибденовый Т-образный руль, высота 620 мм, ширина 560 мм, под HIC-компрессию.",
+      "id": 5
+    }
+  ]
+};

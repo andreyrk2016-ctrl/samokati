@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SAMOKATI — трюковые самокаты и запчасти</title>
+  <meta name="description" content="Магазин трюковых самокатов и запчастей: деки, рули, колёса. Подбор модели под твой стиль катания.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛴</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="topbar" id="top">
+    <div class="container topbar__inner">
+      <a class="logo" href="#top">
+        <span class="logo__icon">🛴</span>
+        <span class="logo__text">SAMO<em>KATI</em></span>
+      </a>
+      <nav class="nav">
+        <a href="#catalog">Каталог</a>
+        <a href="#how">Как купить</a>
+        <a href="#contacts">Контакты</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero__blob hero__blob--1"></div>
+      <div class="hero__blob hero__blob--2"></div>
+      <div class="container hero__inner">
+        <p class="hero__kicker">// магазин для райдеров</p>
+        <h1 class="hero__title">
+          Трюковые<br>
+          <span class="hero__title-accent">самокаты</span><br>
+          <span class="hero__title-outline">и запчасти</span>
+        </h1>
+        <p class="hero__sub">Деки, рули, колёса и готовые комплиты, которые переживут любой стрит и парк. Выбирай модель — ссылка приведёт прямо к товару.</p>
+        <div class="hero__actions">
+          <a class="btn btn--accent" href="#catalog">Смотреть каталог</a>
+          <a class="btn btn--ghost" href="#how">Как купить</a>
+        </div>
+      </div>
+    </section>
+
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__track">
+        <span>Самокаты ✕ Запчасти ✕ Деки ✕ Рули ✕ Колёса ✕ Трюки ✕ Стрит ✕ Парк ✕ </span><span>Самокаты ✕ Запчасти ✕ Деки ✕ Рули ✕ Колёса ✕ Трюки ✕ Стрит ✕ Парк ✕ </span>
+      </div>
+    </div>
+
+    <section class="catalog" id="catalog">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">Каталог</h2>
+          <span class="catalog__count" id="count"></span>
+        </div>
+        <p class="demo-note" id="demo-note" hidden>Сейчас показаны товары-примеры. Загрузите свои модели в папку <code>csd</code> — и каталог обновится автоматически.</p>
+        <div class="toolbar">
+          <div class="chips" id="chips" role="tablist" aria-label="Категории"></div>
+          <label class="search">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="search" id="search" placeholder="Поиск по названию..." autocomplete="off">
+          </label>
+        </div>
+        <div class="grid" id="grid"></div>
+        <p class="empty" id="empty" hidden>Ничего не найдено. Попробуйте изменить запрос или категорию.</p>
+      </div>
+    </section>
+
+    <section class="how" id="how">
+      <div class="container">
+        <h2 class="section-title">Как купить</h2>
+        <div class="how__grid">
+          <div class="how__step">
+            <span class="how__num">01</span>
+            <h3>Выбери модель</h3>
+            <p>Открой карточку товара — внутри все фото и описание.</p>
+          </div>
+          <div class="how__step">
+            <span class="how__num">02</span>
+            <h3>Жми «Купить»</h3>
+            <p>Кнопка откроет страницу товара с актуальной ценой и наличием.</p>
+          </div>
+          <div class="how__step">
+            <span class="how__num">03</span>
+            <h3>Есть вопросы?</h3>
+            <p>Напиши нам — поможем подобрать самокат или запчасть под твой стиль.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="contacts" id="contacts">
+      <div class="container">
+        <h2 class="section-title">Контакты</h2>
+        <p class="contacts__sub">Пиши в любой мессенджер — отвечаем быстро.</p>
+        <div class="contacts__links">
+          <a class="contact-card" href="https://t.me/username" target="_blank" rel="noopener">
+            <span class="contact-card__label">Telegram</span>
+            <span class="contact-card__value">@username</span>
+          </a>
+          <a class="contact-card" href="tel:+79000000000">
+            <span class="contact-card__label">Телефон</span>
+            <span class="contact-card__value">+7 900 000-00-00</span>
+          </a>
+          <a class="contact-card" href="mailto:andreyrk2016@gmail.com">
+            <span class="contact-card__label">Почта</span>
+            <span class="contact-card__value">andreyrk2016@gmail.com</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <span>© <span id="year"></span> SAMOKATI — трюковые самокаты и запчасти</span>
+      <a href="#top">Наверх ↑</a>
+    </div>
+  </footer>
+
+  <dialog class="modal" id="modal">
+    <div class="modal__body">
+      <button class="modal__close" id="modal-close" aria-label="Закрыть">✕</button>
+      <div class="modal__gallery">
+        <button class="modal__arrow modal__arrow--prev" id="modal-prev" aria-label="Предыдущее фото">‹</button>
+        <img class="modal__img" id="modal-img" alt="">
+        <button class="modal__arrow modal__arrow--next" id="modal-next" aria-label="Следующее фото">›</button>
+        <div class="modal__thumbs" id="modal-thumbs"></div>
+      </div>
+      <div class="modal__info">
+        <span class="card__tag" id="modal-tag"></span>
+        <h3 class="modal__name" id="modal-name"></h3>
+        <p class="modal__price" id="modal-price"></p>
+        <p class="modal__desc" id="modal-desc"></p>
+        <a class="btn btn--accent modal__buy" id="modal-buy" target="_blank" rel="noopener">Купить / Подробнее</a>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="catalog.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

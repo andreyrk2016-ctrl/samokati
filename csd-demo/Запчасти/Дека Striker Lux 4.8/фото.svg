@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="bg7" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1c1610"/>
+      <stop offset="1" stop-color="#0a0c10"/>
+    </linearGradient>
+    <radialGradient id="glow7" cx="0.5" cy="0.4" r="0.8">
+      <stop offset="0" stop-color="#ff7a1a" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#ff7a1a" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grip" width="26" height="26" patternUnits="userSpaceOnUse">
+      <circle cx="7" cy="7" r="2.4" fill="#3a4250"/>
+    </pattern>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg7)"/>
+  <rect width="800" height="600" fill="url(#glow7)"/>
+  <rect x="150" y="270" width="440" height="76" rx="26" fill="#161c26" stroke="#ff7a1a" stroke-width="8"/>
+  <rect x="176" y="288" width="388" height="40" rx="14" fill="url(#grip)"/>
+  <g transform="rotate(-24 610 300)">
+    <rect x="586" y="200" width="48" height="150" rx="20" fill="#e8ecf4"/>
+  </g>
+  <text x="40" y="66" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#ff7a1a" letter-spacing="6">PARTS</text>
+  <text x="40" y="562" font-family="Arial, sans-serif" font-size="34" font-weight="800" fill="#eef2f7" letter-spacing="2">STRIKER LUX 4.8</text>
+</svg>

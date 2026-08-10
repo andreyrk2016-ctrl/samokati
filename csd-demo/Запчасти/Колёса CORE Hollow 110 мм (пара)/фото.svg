@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="bg5" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#141a14"/>
+      <stop offset="1" stop-color="#0a0c10"/>
+    </linearGradient>
+    <radialGradient id="glow5" cx="0.5" cy="0.4" r="0.8">
+      <stop offset="0" stop-color="#d4ff3d" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#d4ff3d" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg5)"/>
+  <rect width="800" height="600" fill="url(#glow5)"/>
+  <circle cx="400" cy="290" r="190" fill="none" stroke="#242c38" stroke-width="34"/>
+  <circle cx="400" cy="290" r="150" fill="none" stroke="#d4ff3d" stroke-width="22"/>
+  <g stroke="#e8ecf4" stroke-width="16" stroke-linecap="round">
+    <line x1="400" y1="150" x2="400" y2="430" transform="rotate(0 400 290)"/>
+    <line x1="400" y1="150" x2="400" y2="430" transform="rotate(60 400 290)"/>
+    <line x1="400" y1="150" x2="400" y2="430" transform="rotate(120 400 290)"/>
+  </g>
+  <circle cx="400" cy="290" r="52" fill="#e8ecf4"/>
+  <circle cx="400" cy="290" r="18" fill="#10151c"/>
+  <text x="40" y="66" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#d4ff3d" letter-spacing="6">PARTS</text>
+  <text x="40" y="562" font-family="Arial, sans-serif" font-size="34" font-weight="800" fill="#eef2f7" letter-spacing="2">CORE HOLLOW 110 MM</text>
+</svg>

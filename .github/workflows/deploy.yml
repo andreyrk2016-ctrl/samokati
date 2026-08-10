@@ -1,0 +1,45 @@
+name: Сборка каталога и публикация сайта
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - claude/trick-scooter-sales-site-4d8xfd
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Скачать код
+        uses: actions/checkout@v4
+
+      - name: Собрать каталог из папки csd
+        run: python3 build_catalog.py
+
+      - name: Настроить GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Упаковать сайт
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Опубликовать
+        id: deployment
+        uses: actions/deploy-pages@v4
