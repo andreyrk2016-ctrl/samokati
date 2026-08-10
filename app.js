@@ -45,7 +45,7 @@
   function formatPrice(price) {
     if (price === null || price === undefined || price === "") return "";
     if (typeof price === "number") {
-      return price.toLocaleString("ru-RU") + " ₽";
+      return "$" + price.toLocaleString("en-US");
     }
     return String(price);
   }
