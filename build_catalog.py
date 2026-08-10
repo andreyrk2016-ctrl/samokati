@@ -208,6 +208,27 @@ YUAN_PER_USD = 7.2   # курс юаня к доллару
 MARKUP = 1.0         # наценка: 1.0 = без наценки, 1.3 = +30%
 
 
+def load_display_names():
+    """names.json: {"имя папки (без ценового хвоста)": "красивое название"}."""
+    names_file = ROOT / "names.json"
+    if not names_file.exists():
+        return {}
+    try:
+        return json.loads(names_file.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def apply_display_names(products):
+    names = load_display_names()
+    if not names:
+        return
+    for product in products:
+        nice = names.get(product["name"])
+        if nice:
+            product["name"] = nice
+
+
 def load_yuan_prices():
     prices_file = ROOT / "prices.json"
     if not prices_file.exists():
@@ -238,6 +259,7 @@ def main():
         products = collect_products(ROOT / "csd-demo")
         demo = True
     apply_yuan_prices(products)
+    apply_display_names(products)
 
     products.sort(key=lambda p: (p["category"] != "Самокаты",
                                  p["category"].casefold(),
