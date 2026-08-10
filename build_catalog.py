@@ -178,6 +178,7 @@ def collect_products(base: Path):
                    if d.is_dir() and not d.name.startswith((".", "_"))]
 
         if images or meta["link"]:
+            images = apply_gallery_rules(display_name(folder.name), images)
             resolved_category = (meta["category"] or category
                                  or category_from_name(folder.name) or "Самокаты")
             products.append({
@@ -206,6 +207,41 @@ def collect_products(base: Path):
 # (файл prices.json: {"название товара как на сайте": цена_в_юанях}).
 YUAN_PER_USD = 7.2   # курс юаня к доллару
 MARKUP = 1.0         # наценка: 1.0 = без наценки, 1.3 = +30%
+
+
+def load_json_sidecar(filename):
+    path = ROOT / filename
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def apply_gallery_rules(folder_key: str, images: list) -> list:
+    """gallery.json: {"имя папки": {"cover": "04.jpg", "skip": ["05.jpg"]}}.
+    skip — служебные картинки (таблицы размеров), cover — главное фото."""
+    rules = load_json_sidecar("gallery.json").get(folder_key)
+    if not rules:
+        return images
+    skip = set(rules.get("skip", []))
+    images = [f for f in images if f.name not in skip]
+    cover = rules.get("cover")
+    if cover:
+        images.sort(key=lambda f: (f.name != cover,) + tuple(natural_key(f)))
+    return images
+
+
+def apply_descriptions(products):
+    """descriptions.json: {"имя папки без хвоста": "текст описания"}."""
+    descriptions = load_json_sidecar("descriptions.json")
+    if not descriptions:
+        return
+    for product in products:
+        text = descriptions.get(product["name"])
+        if text and not product["description"]:
+            product["description"] = text
 
 
 def load_display_names():
@@ -260,6 +296,7 @@ def main():
         demo = True
     apply_yuan_prices(products)
     apply_display_names(products)
+    apply_descriptions(products)
 
     products.sort(key=lambda p: (p["category"] != "Самокаты",
                                  p["category"].casefold(),
