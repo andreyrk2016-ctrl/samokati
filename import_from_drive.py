@@ -34,9 +34,9 @@ TARGET_DIR = ROOT / "csd"
 
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
 TEXT_EXTS = {".txt", ".url", ".md", ".website"}
-MAX_IMAGES_PER_PRODUCT = 6
-MAX_SIDE = 1200
-JPEG_QUALITY = 82
+MAX_IMAGES_PER_PRODUCT = 12
+MAX_SIDE = 1600
+JPEG_QUALITY = 87
 DOWNLOAD_PAUSE = 1.5      # пауза между файлами, сек
 RETRIES = 3               # попыток на файл
 RETRY_PAUSE = 25          # пауза перед повторной попыткой, сек

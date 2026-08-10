@@ -231,6 +231,20 @@
     if (event.key === "ArrowRight") showImage(modalState.index + 1);
   });
 
+  /* Клик по фото — полноэкранный просмотр */
+  var lightbox = document.getElementById("lightbox");
+  var lightboxImg = document.getElementById("lightbox-img");
+
+  modalImg.addEventListener("click", function () {
+    if (!modalImg.src) return;
+    lightboxImg.src = modalImg.src;
+    lightbox.hidden = false;
+  });
+
+  lightbox.addEventListener("click", function () {
+    lightbox.hidden = true;
+  });
+
   /* ---------- Старт ---------- */
 
   renderChips();
