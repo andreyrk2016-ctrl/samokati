@@ -24,6 +24,7 @@ from collections import defaultdict
 from pathlib import Path
 
 import gdown
+import numpy as np
 import requests
 from PIL import Image
 
@@ -66,9 +67,42 @@ def list_drive_files():
     return None
 
 
+def find_photo_band(img):
+    """Ищет полосу самого фото между чёрными панелями скриншота
+    (статусбар телефона сверху, кнопки маркетплейса снизу)."""
+    gray = np.asarray(img.convert("L"), dtype=np.float32)
+    h = gray.shape[0]
+    active = (gray.std(axis=1) > 10) | (gray.mean(axis=1) > 60)
+    runs, start, gap = [], None, 0
+    for i, is_active in enumerate(active):
+        if is_active:
+            if start is None:
+                start = i
+            gap = 0
+        elif start is not None:
+            gap += 1
+            if gap > 8:
+                runs.append((start, i - gap))
+                start = None
+    if start is not None:
+        runs.append((start, h - 1))
+    if not runs:
+        return None
+    filtered = [(s, e) for s, e in runs
+                if not ((e - s) < 0.12 * h and (s < 0.03 * h or e > 0.94 * h))]
+    s, e = max(filtered or runs, key=lambda r: r[1] - r[0])
+    if (e - s) < 0.25 * h:
+        return None
+    pad = int(0.005 * h)
+    return max(0, s - pad), min(h, e + pad)
+
+
 def compress_image(source: Path, target: Path) -> None:
     with Image.open(source) as img:
         img = img.convert("RGB")
+        band = find_photo_band(img)
+        if band and (band[1] - band[0]) < img.height * 0.96:
+            img = img.crop((0, band[0], img.width, band[1]))
         img.thumbnail((MAX_SIDE, MAX_SIDE), Image.LANCZOS)
         target.parent.mkdir(parents=True, exist_ok=True)
         img.save(target, "JPEG", quality=JPEG_QUALITY, optimize=True)

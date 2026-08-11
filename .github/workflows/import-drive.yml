@@ -23,7 +23,7 @@ jobs:
           python-version: "3.12"
 
       - name: Установить зависимости
-        run: pip install gdown pillow requests
+        run: pip install gdown pillow requests numpy
 
       - name: Скачать и сжать товары с Диска
         run: python import_from_drive.py

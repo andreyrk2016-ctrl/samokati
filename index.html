@@ -20,10 +20,11 @@
         <span class="logo__text">PRO<em>SCOOTER</em></span>
       </a>
       <nav class="nav">
-        <a href="#catalog">Каталог</a>
-        <a href="#how">Как купить</a>
-        <a href="#contacts">Контакты</a>
+        <a href="#catalog" data-i18n="nav_catalog">Каталог</a>
+        <a href="#how" data-i18n="nav_how">Как купить</a>
+        <a href="#contacts" data-i18n="nav_contacts">Контакты</a>
       </nav>
+      <div class="lang-switch" id="lang-switch" role="group" aria-label="Язык"></div>
     </div>
   </header>
 
@@ -32,63 +33,63 @@
       <div class="hero__blob hero__blob--1"></div>
       <div class="hero__blob hero__blob--2"></div>
       <div class="container hero__inner">
-        <p class="hero__kicker">// магазин для райдеров</p>
+        <p class="hero__kicker" data-i18n="kicker">// магазин для райдеров</p>
         <h1 class="hero__title">
-          Трюковые<br>
-          <span class="hero__title-accent">самокаты</span><br>
-          <span class="hero__title-outline">и запчасти</span>
+          <span data-i18n="hero_1">Трюковые</span><br>
+          <span class="hero__title-accent" data-i18n="hero_2">самокаты</span><br>
+          <span class="hero__title-outline" data-i18n="hero_3">и запчасти</span>
         </h1>
-        <p class="hero__sub">Деки, рули, колёса и готовые комплиты, которые переживут любой стрит и парк. Выбирай модель — ссылка приведёт прямо к товару.</p>
+        <p class="hero__sub" data-i18n="hero_sub">Деки, рули, колёса и готовые комплиты, которые переживут любой стрит и парк. Выбирай модель — ссылка приведёт прямо к товару.</p>
         <div class="hero__actions">
-          <a class="btn btn--accent" href="#catalog">Смотреть каталог</a>
-          <a class="btn btn--ghost" href="#how">Как купить</a>
+          <a class="btn btn--accent" href="#catalog" data-i18n="btn_catalog">Смотреть каталог</a>
+          <a class="btn btn--ghost" href="#how" data-i18n="btn_how">Как купить</a>
         </div>
       </div>
     </section>
 
     <div class="marquee" aria-hidden="true">
       <div class="marquee__track">
-        <span>Самокаты ✕ Запчасти ✕ Деки ✕ Рули ✕ Колёса ✕ Трюки ✕ Стрит ✕ Парк ✕ </span><span>Самокаты ✕ Запчасти ✕ Деки ✕ Рули ✕ Колёса ✕ Трюки ✕ Стрит ✕ Парк ✕ </span>
+        <span data-i18n="marquee">Самокаты ✕ Запчасти ✕ Деки ✕ Рули ✕ Колёса ✕ Трюки ✕ Стрит ✕ Парк ✕ </span><span data-i18n="marquee">Самокаты ✕ Запчасти ✕ Деки ✕ Рули ✕ Колёса ✕ Трюки ✕ Стрит ✕ Парк ✕ </span>
       </div>
     </div>
 
     <section class="catalog" id="catalog">
       <div class="container">
         <div class="section-head">
-          <h2 class="section-title">Каталог</h2>
+          <h2 class="section-title" data-i18n="catalog_title">Каталог</h2>
           <span class="catalog__count" id="count"></span>
         </div>
-        <p class="demo-note" id="demo-note" hidden>Сейчас показаны товары-примеры. Загрузите свои модели в папку <code>csd</code> — и каталог обновится автоматически.</p>
+        <p class="demo-note" id="demo-note" hidden><span data-i18n="demo_note_1">Сейчас показаны товары-примеры. Загрузите свои модели в папку </span><code>csd</code><span data-i18n="demo_note_2"> — и каталог обновится автоматически.</span></p>
         <div class="toolbar">
           <div class="chips" id="chips" role="tablist" aria-label="Категории"></div>
           <label class="search">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-            <input type="search" id="search" placeholder="Поиск по названию..." autocomplete="off">
+            <input type="search" id="search" placeholder="Поиск по названию..." autocomplete="off" data-i18n-placeholder="search_ph">
           </label>
         </div>
         <div class="grid" id="grid"></div>
-        <p class="empty" id="empty" hidden>Ничего не найдено. Попробуйте изменить запрос или категорию.</p>
+        <p class="empty" id="empty" hidden data-i18n="empty">Ничего не найдено. Попробуйте изменить запрос или категорию.</p>
       </div>
     </section>
 
     <section class="how" id="how">
       <div class="container">
-        <h2 class="section-title">Как купить</h2>
+        <h2 class="section-title" data-i18n="how_title">Как купить</h2>
         <div class="how__grid">
           <div class="how__step">
             <span class="how__num">01</span>
-            <h3>Выбери модель</h3>
-            <p>Открой карточку товара — внутри все фото и описание.</p>
+            <h3 data-i18n="how1_t">Выбери модель</h3>
+            <p data-i18n="how1_p">Открой карточку товара — внутри все фото и описание.</p>
           </div>
           <div class="how__step">
             <span class="how__num">02</span>
-            <h3>Жми «Купить»</h3>
-            <p>Кнопка откроет страницу товара с актуальной ценой и наличием.</p>
+            <h3 data-i18n="how2_t">Жми «Купить»</h3>
+            <p data-i18n="how2_p">Кнопка откроет страницу товара с актуальной ценой и наличием.</p>
           </div>
           <div class="how__step">
             <span class="how__num">03</span>
-            <h3>Есть вопросы?</h3>
-            <p>Напиши нам — поможем подобрать самокат или запчасть под твой стиль.</p>
+            <h3 data-i18n="how3_t">Есть вопросы?</h3>
+            <p data-i18n="how3_p">Напиши нам — поможем подобрать самокат или запчасть под твой стиль.</p>
           </div>
         </div>
       </div>
@@ -96,19 +97,19 @@
 
     <section class="contacts" id="contacts">
       <div class="container">
-        <h2 class="section-title">Контакты</h2>
-        <p class="contacts__sub">Пиши в любой мессенджер — отвечаем быстро.</p>
+        <h2 class="section-title" data-i18n="contacts_title">Контакты</h2>
+        <p class="contacts__sub" data-i18n="contacts_sub">Пиши в любой мессенджер — отвечаем быстро.</p>
         <div class="contacts__links">
           <a class="contact-card" href="https://t.me/username" target="_blank" rel="noopener">
-            <span class="contact-card__label">Telegram</span>
+            <span class="contact-card__label" data-i18n="c_tg">Telegram</span>
             <span class="contact-card__value">@username</span>
           </a>
           <a class="contact-card" href="tel:+79000000000">
-            <span class="contact-card__label">Телефон</span>
+            <span class="contact-card__label" data-i18n="c_phone">Телефон</span>
             <span class="contact-card__value">+7 900 000-00-00</span>
           </a>
           <a class="contact-card" href="mailto:andreyrk2016@gmail.com">
-            <span class="contact-card__label">Почта</span>
+            <span class="contact-card__label" data-i18n="c_mail">Почта</span>
             <span class="contact-card__value">andreyrk2016@gmail.com</span>
           </a>
         </div>
@@ -118,8 +119,8 @@
 
   <footer class="footer">
     <div class="container footer__inner">
-      <span>© <span id="year"></span> PRO SCOOTER SHOP — трюковые самокаты и запчасти</span>
-      <a href="#top">Наверх ↑</a>
+      <span>© <span id="year"></span> <span data-i18n="footer_brand">PRO SCOOTER SHOP — трюковые самокаты и запчасти</span></span>
+      <a href="#top" data-i18n="to_top">Наверх ↑</a>
     </div>
   </footer>
 
@@ -137,7 +138,7 @@
         <h3 class="modal__name" id="modal-name"></h3>
         <p class="modal__price" id="modal-price"></p>
         <p class="modal__desc" id="modal-desc"></p>
-        <a class="btn btn--accent modal__buy" id="modal-buy" target="_blank" rel="noopener">Купить / Подробнее</a>
+        <a class="btn btn--accent modal__buy" id="modal-buy" target="_blank" rel="noopener" data-i18n="buy_more">Купить / Подробнее</a>
       </div>
     </div>
     <div class="lightbox" id="lightbox" hidden>
@@ -146,6 +147,7 @@
   </dialog>
 
   <script src="catalog.js"></script>
+  <script src="i18n.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

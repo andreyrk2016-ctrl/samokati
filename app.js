@@ -31,6 +31,72 @@
   document.getElementById("year").textContent = new Date().getFullYear();
   if (DATA.demo) demoNote.hidden = false;
 
+  /* ---------- Языки ---------- */
+
+  var I18N = window.I18N || { langs: [{ code: "ru", label: "RU" }], ui: { ru: {} } };
+  var lang = "ru";
+  try { lang = localStorage.getItem("psshop-lang") || "ru"; } catch (e) {}
+  if (!I18N.ui[lang]) lang = "ru";
+
+  function t(key) {
+    return (I18N.ui[lang] && I18N.ui[lang][key]) || (I18N.ui.ru && I18N.ui.ru[key]) || "";
+  }
+
+  function trName(product) {
+    if (lang === "ru") return product.name;
+    return (I18N.names && I18N.names[lang] && I18N.names[lang][product.name]) || product.name;
+  }
+
+  function trDesc(product) {
+    if (lang === "ru") return product.description || "";
+    return (I18N.descriptions && I18N.descriptions[lang] && I18N.descriptions[lang][product.name]) || product.description || "";
+  }
+
+  function trCategory(category) {
+    if (lang === "ru") return category;
+    return (I18N.categories && I18N.categories[lang] && I18N.categories[lang][category]) || category;
+  }
+
+  var langSwitch = document.getElementById("lang-switch");
+
+  function renderLangSwitch() {
+    if (!langSwitch) return;
+    langSwitch.innerHTML = I18N.langs.map(function (item) {
+      return '<button class="lang-btn' + (item.code === lang ? " is-active" : "") +
+        '" data-lang="' + item.code + '">' + item.label + "</button>";
+    }).join("");
+  }
+
+  function applyStaticTexts() {
+    document.documentElement.lang = lang;
+    document.title = t("title_tag") || document.title;
+    document.querySelectorAll("[data-i18n]").forEach(function (el) {
+      var text = t(el.getAttribute("data-i18n"));
+      if (text) el.textContent = text;
+    });
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(function (el) {
+      var text = t(el.getAttribute("data-i18n-placeholder"));
+      if (text) el.placeholder = text;
+    });
+  }
+
+  function setLang(next) {
+    lang = next;
+    try { localStorage.setItem("psshop-lang", lang); } catch (e) {}
+    renderLangSwitch();
+    applyStaticTexts();
+    renderChips();
+    renderGrid();
+    if (modal.open && modalState.product) fillModalTexts(modalState.product);
+  }
+
+  if (langSwitch) {
+    langSwitch.addEventListener("click", function (event) {
+      var btn = event.target.closest(".lang-btn");
+      if (btn && btn.dataset.lang !== lang) setLang(btn.dataset.lang);
+    });
+  }
+
   /* ---------- Утилиты ---------- */
 
   function escapeHtml(value) {
@@ -50,12 +116,9 @@
     return String(price);
   }
 
-  function pluralize(count) {
-    var mod10 = count % 10;
-    var mod100 = count % 100;
-    if (mod10 === 1 && mod100 !== 11) return "товар";
-    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return "товара";
-    return "товаров";
+  function formatCount(count) {
+    if (I18N.count) return I18N.count(lang, count);
+    return count + "";
   }
 
   /* ---------- Категории ---------- */
@@ -70,10 +133,12 @@
 
   function renderChips() {
     var categories = getCategories();
-    var html = '<button class="chip is-active" data-category="all">Все</button>';
+    var html = '<button class="chip' + (state.category === "all" ? " is-active" : "") +
+      '" data-category="all">' + escapeHtml(t("chip_all") || "Все") + "</button>";
     categories.forEach(function (category) {
-      html += '<button class="chip" data-category="' + escapeHtml(category) + '">' +
-        escapeHtml(category) + "</button>";
+      html += '<button class="chip' + (state.category === category ? " is-active" : "") +
+        '" data-category="' + escapeHtml(category) + '">' +
+        escapeHtml(trCategory(category)) + "</button>";
     });
     chipsWrap.innerHTML = html;
   }
@@ -100,32 +165,35 @@
       var matchesCategory = state.category === "all" || product.category === state.category;
       var matchesQuery = !state.query ||
         product.name.toLowerCase().indexOf(state.query) !== -1 ||
-        (product.description || "").toLowerCase().indexOf(state.query) !== -1;
+        trName(product).toLowerCase().indexOf(state.query) !== -1 ||
+        trDesc(product).toLowerCase().indexOf(state.query) !== -1;
       return matchesCategory && matchesQuery;
     });
   }
 
   function cardHtml(product) {
+    var name = trName(product);
     var photo = product.images.length
-      ? '<img src="' + product.images[0] + '" alt="' + escapeHtml(product.name) + '" loading="lazy">'
+      ? '<img src="' + product.images[0] + '" alt="' + escapeHtml(name) + '" loading="lazy">'
       : '<span class="card__photo--empty" style="height:100%">🛴</span>';
 
     var price = formatPrice(product.price);
     var priceHtml = price
       ? '<span class="card__price">' + escapeHtml(price) + "</span>"
-      : '<span class="card__price--empty">Цена по запросу</span>';
+      : '<span class="card__price--empty">' + escapeHtml(t("price_ask") || "Цена по запросу") + "</span>";
 
     var buyHtml = product.link
-      ? '<a class="card__buy" href="' + escapeHtml(product.link) + '" target="_blank" rel="noopener">Купить</a>'
+      ? '<a class="card__buy" href="' + escapeHtml(product.link) + '" target="_blank" rel="noopener">' +
+        escapeHtml(t("buy") || "Купить") + "</a>"
       : "";
 
     return (
       '<article class="card" data-id="' + product.id + '" tabindex="0" role="button" ' +
-      'aria-label="' + escapeHtml(product.name) + '">' +
+      'aria-label="' + escapeHtml(name) + '">' +
       '<div class="card__photo">' + photo + "</div>" +
       '<div class="card__body">' +
-      '<span class="card__tag">' + escapeHtml(product.category) + "</span>" +
-      '<h3 class="card__name">' + escapeHtml(product.name) + "</h3>" +
+      '<span class="card__tag">' + escapeHtml(trCategory(product.category)) + "</span>" +
+      '<h3 class="card__name">' + escapeHtml(name) + "</h3>" +
       '<div class="card__bottom">' + priceHtml + buyHtml + "</div>" +
       "</div></article>"
     );
@@ -135,7 +203,7 @@
     var visible = getVisibleProducts();
     grid.innerHTML = visible.map(cardHtml).join("");
     emptyEl.hidden = visible.length > 0;
-    countEl.textContent = visible.length + " " + pluralize(visible.length);
+    countEl.textContent = formatCount(visible.length);
   }
 
   grid.addEventListener("click", function (event) {
@@ -154,16 +222,21 @@
 
   /* ---------- Модальное окно ---------- */
 
+  function fillModalTexts(product) {
+    modalTag.textContent = trCategory(product.category);
+    modalName.textContent = trName(product);
+    modalPrice.textContent = formatPrice(product.price);
+    modalDesc.textContent = trDesc(product);
+    modalBuy.textContent = t("buy_more") || "Купить / Подробнее";
+  }
+
   function openModal(id) {
     var product = products.find(function (item) { return item.id === id; });
     if (!product) return;
     modalState.product = product;
     modalState.index = 0;
 
-    modalTag.textContent = product.category;
-    modalName.textContent = product.name;
-    modalPrice.textContent = formatPrice(product.price);
-    modalDesc.textContent = product.description || "";
+    fillModalTexts(product);
 
     if (product.link) {
       modalBuy.hidden = false;
@@ -199,7 +272,7 @@
     }
     modalState.index = (index + total) % total;
     modalImg.src = product.images[modalState.index];
-    modalImg.alt = product.name;
+    modalImg.alt = trName(product);
     modalThumbs.querySelectorAll(".modal__thumb").forEach(function (thumb) {
       thumb.classList.toggle("is-active", Number(thumb.dataset.index) === modalState.index);
     });
@@ -247,6 +320,8 @@
 
   /* ---------- Старт ---------- */
 
+  renderLangSwitch();
+  applyStaticTexts();
   renderChips();
   renderGrid();
 })();
