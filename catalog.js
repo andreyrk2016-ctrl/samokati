@@ -15,6 +15,10 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8SnslLq1qBxF5P1?tk=BhXtgAyn5Zd",
       "price": 111,
       "description": "CUB2 — второе поколение начального комплита CSD. Дека 125×540 мм по дизайну серии Newborn, стальной руль 4130, система SCS, цельная алюминиевая вилка. Отличный вариант для старта.",
+      "variants": [
+        "Чёрный",
+        "Белый"
+      ],
       "id": 0
     },
     {
@@ -29,6 +33,10 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.83B7IvdHSu6DKnY?tk=XgTngvk1XeZ",
       "price": 181,
       "description": "Высота ~100 см (до руля). Руль 720×560 мм (28.3×22\"), хромомолибден 4130. Дека на выбор: 152×560 мм (6×22\") или 165×560 мм (6.5×22\"), алюминий 6061-T6. Колёса 110 мм. Для райдеров ростом до ~185 см.",
+      "variants": [
+        "Чёрный",
+        "Серебристый"
+      ],
       "id": 1
     },
     {
@@ -43,6 +51,10 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.83ydEwxvz2GD6gP?tk=H2vtgvQvxYc",
       "price": 104,
       "description": "Руль 680×520 мм (26.8×20.5\"), хромомолибден 4130. Дека 120×520 мм (4.7×20.5\"), алюминий 6061-T6. Колёса 110×24 мм. Лёгкий комплит для первых трюков.",
+      "variants": [
+        "Чёрный",
+        "Белый"
+      ],
       "id": 2
     },
     {
@@ -54,6 +66,10 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8U3CjBfFI8Rtxef?tk=eFT3gD79r2q",
       "price": 250,
       "description": "Три размера. M: высота 958 мм, дека 159×570 мм (6.25×22.5\"), руль 560×673 мм. L: 970 мм, дека 165×570 мм (6.5×22.5\"), руль 584×686 мм. XL: 983 мм, дека 165×584 мм (6.5×23\"), руль 584×699 мм. Колёса 110×24 мм, SCS, вес 3.9–4 кг.",
+      "variants": [
+        "Чёрный",
+        "Серебристый"
+      ],
       "id": 3
     },
     {
@@ -68,6 +84,10 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8U3qvH6jPS2o5BI?tk=Z79ogD7fygJ",
       "price": 181,
       "description": "Размеры S и M. S: высота 780 мм, дека 121×495 мм (4.75×19.5\"), руль 521×498 мм, вес ~3.3 кг. M: высота 870 мм, дека 133×521 мм (5.25×20.5\"). Колёса 110×24 мм, SCS.",
+      "variants": [
+        "Чёрный",
+        "Серебристый"
+      ],
       "id": 4
     },
     {
@@ -82,6 +102,10 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8U3vW9BHMCB8yYj?tk=dlfmgD77KwJ",
       "price": 181,
       "description": "Стрит-комплит North. Высота ~90 см, руль 620×560 мм (24.5×22\"), хромомолибден 4130. Рекомендуемый рост райдера — до ~170 см.",
+      "variants": [
+        "Чёрный",
+        "Фиолетовый"
+      ],
       "id": 5
     },
     {
@@ -96,6 +120,10 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.861yQYzJgqIN6ju?tk=NXdHgAB81r1",
       "price": 60,
       "description": "",
+      "variants": [
+        "Чёрный",
+        "Серебристый"
+      ],
       "id": 6
     },
     {
@@ -110,6 +138,10 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8TXbxRaIH5uizCo?tk=haBEgABnR2E",
       "price": 67,
       "description": "",
+      "variants": [
+        "Чёрный",
+        "Серебристый"
+      ],
       "id": 7
     },
     {
@@ -124,6 +156,11 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8SMwCtAomyFftje?tk=oZmsgABp2R6",
       "price": 38,
       "description": "",
+      "variants": [
+        "Жёлтый",
+        "Чёрный",
+        "Бирюзовый"
+      ],
       "id": 8
     },
     {
@@ -138,6 +175,10 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8VSmXt1IdZD3fil?tk=4m24gv9znHL",
       "price": 83,
       "description": "Размеры: 152×560 мм (6×22\") или 165×560 мм (6.5×22\"). Алюминий C5/6061 + термообработка T6, угол рулевой 82.3°.",
+      "variants": [
+        "Чёрный",
+        "Серебристый"
+      ],
       "id": 9
     },
     {
@@ -156,6 +197,7 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8U3zTiaEk7AWHTM?tk=39DWgD7ljnc",
       "price": 148,
       "description": "Размеры M/L/XL: от 159×560 мм (6.25×22.5\") до 165×584 мм (6.5×23\"), вес 1700–1800 г, алюминий 6061-T6.",
+      "variants": [],
       "id": 10
     },
     {
@@ -170,6 +212,10 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8Tcq1XqyDlRVDPY?tk=aM5LgABVekj",
       "price": 90,
       "description": "",
+      "variants": [
+        "Чёрный",
+        "Серебристый"
+      ],
       "id": 11
     },
     {
@@ -184,6 +230,7 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8VIhYrbkIu6IpI3?tk=g7WRgD7pFIK",
       "price": 139,
       "description": "Подписная модель Jon Ryan — сверхширокая стрит-дека серии Unity.",
+      "variants": [],
       "id": 12
     },
     {
@@ -198,6 +245,10 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.84tqzbrOXsL23y5?tk=tQougD7b7GI",
       "price": 139,
       "description": "Подписная модель William Holm. Размеры: 6.5×22\" (~1950 г) или 6.5×23\" (~2000 г).",
+      "variants": [
+        "Зелёный",
+        "Серебристый"
+      ],
       "id": 13
     },
     {
@@ -212,6 +263,12 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8et34Xzg9trPOcF?tk=KDWpgD7Lhi7",
       "price": 139,
       "description": "Стрит-дека North, размер 152×560 мм (6×22\").",
+      "variants": [
+        "Зелёный",
+        "Серебристый",
+        "Коричневый",
+        "Чёрный"
+      ],
       "id": 14
     },
     {
@@ -226,6 +283,11 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.83zeWbXcP1YOiXC?tk=gRfCgvkwbU1",
       "price": 5,
       "description": "",
+      "variants": [
+        "Зелёный",
+        "Жёлтый",
+        "Серый"
+      ],
       "id": 15
     },
     {
@@ -240,6 +302,7 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8SnJ6dJYPzLkAAg?tk=gSp5gAylPdk",
       "price": 11,
       "description": "",
+      "variants": [],
       "id": 16
     },
     {
@@ -254,6 +317,10 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8dARMS8xWTm8Rh8?tk=T6QagvkyyAh",
       "price": 1,
       "description": "",
+      "variants": [
+        "Чёрный",
+        "Серебристый"
+      ],
       "id": 17
     },
     {
@@ -269,6 +336,7 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8SMfk9SGqZQ4IDd?tk=ZV9XgABbJDI",
       "price": 14,
       "description": "Интегрированная рулевая 45°×45°, японские подшипники.",
+      "variants": [],
       "id": 18
     },
     {
@@ -283,6 +351,7 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.861zzgR3ac0l0tq?tk=BD7UgAB9bhy",
       "price": 40,
       "description": "Интегрированная рулевая 45°×45°, плавное вращение, японские подшипники.",
+      "variants": [],
       "id": 19
     },
     {
@@ -298,6 +367,7 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8618TbuPbVXRMw7?tk=cqrmgAyvXAN",
       "price": 6,
       "description": "",
+      "variants": [],
       "id": 20
     },
     {
@@ -312,6 +382,11 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8h3JHwy0hHrRihO?tk=0MRLgAyJJRe",
       "price": 6,
       "description": "",
+      "variants": [
+        "Серый",
+        "Фиолетовый",
+        "Белый"
+      ],
       "id": 21
     },
     {
@@ -326,6 +401,7 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.861fY02sziffHou?tk=YQsfgAyLs80",
       "price": 6,
       "description": "",
+      "variants": [],
       "id": 22
     },
     {
@@ -340,6 +416,7 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8he6r9iqhlwQK3X?tk=fq63gABhKWY",
       "price": 44,
       "description": "",
+      "variants": [],
       "id": 23
     },
     {
@@ -356,6 +433,7 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8TcHQcogmHmilyL?tk=7V3RgABgE7X",
       "price": 11,
       "description": "",
+      "variants": [],
       "id": 24
     },
     {
@@ -370,6 +448,11 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8h3AxfOSZyJTDjX?tk=jxTvgABZ7LQ",
       "price": 14,
       "description": "110×24 мм (пара ~200 г), алюминиевый сердечник CNC.",
+      "variants": [
+        "Розовый",
+        "Белый",
+        "Фиолетовый"
+      ],
       "id": 25
     },
     {
@@ -385,6 +468,10 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8hedL899ggNc4N5?tk=ZGXXgABdkxv",
       "price": 14,
       "description": "110×24 мм, литой алюминиевый сердечник, подшипники в комплекте.",
+      "variants": [
+        "Чёрный",
+        "Серебристый"
+      ],
       "id": 26
     },
     {
@@ -399,6 +486,10 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8Tc8A9CHgnk29BP?tk=2wAIgAyzAGB",
       "price": 11,
       "description": "110 мм, облегчённый алюминиевый сердечник, износостойкий полиуретан.",
+      "variants": [
+        "Чёрный",
+        "Серебристый"
+      ],
       "id": 27
     },
     {
@@ -413,6 +504,10 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8h38x1plFCTNQbn?tk=kHYvgAyiXWJ",
       "price": 10,
       "description": "110×24 мм, ажурный алюминиевый сердечник.",
+      "variants": [
+        "Чёрный",
+        "Синий"
+      ],
       "id": 28
     },
     {
@@ -427,6 +522,10 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8SMMTYyarWhvLmB?tk=bGREgAB7mSq",
       "price": 32,
       "description": "110×24 мм, алюминиевый сердечник 6061, CNC-обработка.",
+      "variants": [
+        "Чёрный",
+        "Серебристый"
+      ],
       "id": 29
     },
     {
@@ -441,6 +540,13 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8SMbA7BWguPfz62?tk=9c9ggAywoZ3",
       "price": 30,
       "description": "110×24 мм, алюминиевый сердечник, 7075 CNC.",
+      "variants": [
+        "Розовый",
+        "Красный",
+        "Синий",
+        "Чёрный",
+        "Серебристый"
+      ],
       "id": 30
     },
     {
@@ -455,6 +561,10 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8SnycKA8fubYgn2?tk=p566gAyHWbk",
       "price": 9,
       "description": "Длина ~170 мм, диаметр 22.2 мм, мягкая резина с мелким рифлением.",
+      "variants": [
+        "Чёрный",
+        "Белый"
+      ],
       "id": 31
     },
     {
@@ -469,6 +579,12 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8SnShsCxtLT1UlA?tk=quafgAyem2q",
       "price": 7,
       "description": "Длина ~170 мм, диаметр 22.2 мм, средняя жёсткость.",
+      "variants": [
+        "Розовый",
+        "Фиолетовый",
+        "Оранжевый",
+        "Чёрный"
+      ],
       "id": 32
     },
     {
@@ -484,6 +600,11 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.86YyFALFfaipi2X?tk=vbpOgAyhdl5",
       "price": 10,
       "description": "",
+      "variants": [
+        "Синий",
+        "Серый",
+        "Чёрный"
+      ],
       "id": 33
     },
     {
@@ -498,6 +619,11 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8611Y4IDKrgmAcm?tk=fWE8gAy9QxO",
       "price": 12,
       "description": "",
+      "variants": [
+        "Коричневый",
+        "Зелёный",
+        "Чёрный"
+      ],
       "id": 34
     },
     {
@@ -513,6 +639,10 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8TcnOAWCFTwNfQB?tk=58lqgABXCW5",
       "price": 69,
       "description": "Т-образный руль нового поколения, хромомолибден 4130.",
+      "variants": [
+        "Чёрный",
+        "Серебристый"
+      ],
       "id": 35
     },
     {
@@ -527,6 +657,10 @@ window.CATALOG = {
       "link": "https://e.tb.cn/h.8TXZbDNb0MJSuqM?tk=hUtUgABOvy6",
       "price": 39,
       "description": "SCS-хомут на 4 болта, CNC-алюминий.",
+      "variants": [
+        "Чёрный",
+        "Серебристый"
+      ],
       "id": 36
     }
   ]

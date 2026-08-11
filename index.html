@@ -44,6 +44,20 @@
           <a class="btn btn--accent" href="#catalog" data-i18n="btn_catalog">Смотреть каталог</a>
           <a class="btn btn--ghost" href="#how" data-i18n="btn_how">Как купить</a>
         </div>
+        <div class="hero__stats">
+          <div class="stat">
+            <span class="stat__num" data-target="37">0</span>
+            <span class="stat__label" data-i18n="stat_products">товаров</span>
+          </div>
+          <div class="stat">
+            <span class="stat__num" data-target="5">0</span>
+            <span class="stat__label" data-i18n="stat_brands">брендов</span>
+          </div>
+          <div class="stat">
+            <span class="stat__num" data-target="7">0</span>
+            <span class="stat__label" data-i18n="stat_cats">категорий</span>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -145,14 +159,36 @@
         <span class="card__tag" id="modal-tag"></span>
         <h3 class="modal__name" id="modal-name"></h3>
         <p class="modal__price" id="modal-price"></p>
+        <div class="modal__variants" id="modal-variants" hidden>
+          <span class="modal__variants-label" data-i18n="color_label">Цвет:</span>
+          <div class="variant-chips" id="variant-chips"></div>
+        </div>
         <p class="modal__desc" id="modal-desc"></p>
         <a class="btn btn--accent modal__buy" id="modal-buy" target="_blank" rel="noopener" data-i18n="buy_more">Купить / Подробнее</a>
+        <button type="button" class="btn btn--ghost modal__support" id="modal-support" data-i18n="support_btn">Связаться с поддержкой</button>
       </div>
     </div>
     <div class="lightbox" id="lightbox" hidden>
       <img id="lightbox-img" alt="">
     </div>
   </dialog>
+
+  <button class="support-fab" id="support-fab" aria-label="Поддержка">💬</button>
+  <div class="support-panel" id="support-panel" hidden>
+    <div class="support-panel__head">
+      <span data-i18n="sup_title">Поддержка PRO SCOOTER</span>
+      <button class="support-panel__close" id="support-close" aria-label="Закрыть">✕</button>
+    </div>
+    <div class="support-quick">
+      <a class="support-quick__btn" href="https://t.me/proscooter" target="_blank" rel="noopener">Telegram</a>
+      <a class="support-quick__btn" href="https://wa.me/79000000000" target="_blank" rel="noopener">WhatsApp</a>
+    </div>
+    <div class="support-msgs" id="support-msgs"></div>
+    <form class="support-input" id="support-form">
+      <input type="text" id="support-text" placeholder="Ваш вопрос..." autocomplete="off" data-i18n-placeholder="sup_ph">
+      <button type="submit" class="support-send" aria-label="Отправить">➤</button>
+    </form>
+  </div>
 
   <script src="catalog.js"></script>
   <script src="i18n.js"></script>

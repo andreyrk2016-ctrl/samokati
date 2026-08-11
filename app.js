@@ -88,7 +88,10 @@
     applyStaticTexts();
     renderChips();
     renderGrid();
-    if (modal.open && modalState.product) fillModalTexts(modalState.product);
+    if (modal.open && modalState.product) {
+      fillModalTexts(modalState.product);
+      renderVariants(modalState.product);
+    }
   }
 
   if (langSwitch) {
@@ -172,11 +175,22 @@
     });
   }
 
+  function badgeHtml(product) {
+    if (product.category !== "Самокаты" || typeof product.price !== "number") return "";
+    if (product.price >= 180) {
+      return '<span class="card__badge card__badge--top">' + escapeHtml(t("badge_top") || "ТОП") + "</span>";
+    }
+    if (product.price <= 120) {
+      return '<span class="card__badge">' + escapeHtml(t("badge_hot") || "ХИТ") + "</span>";
+    }
+    return "";
+  }
+
   function cardHtml(product) {
     var name = trName(product);
-    var photo = product.images.length
+    var photo = badgeHtml(product) + (product.images.length
       ? '<img src="' + product.images[0] + '" alt="' + escapeHtml(name) + '" loading="lazy">'
-      : '<span class="card__photo--empty" style="height:100%">🛴</span>';
+      : '<span class="card__photo--empty" style="height:100%">🛴</span>');
 
     var price = formatPrice(product.price);
     var priceHtml = price
@@ -205,6 +219,7 @@
     grid.innerHTML = visible.map(cardHtml).join("");
     emptyEl.hidden = visible.length > 0;
     countEl.textContent = formatCount(visible.length);
+    observeReveals();
   }
 
   grid.addEventListener("click", function (event) {
@@ -236,8 +251,10 @@
     if (!product) return;
     modalState.product = product;
     modalState.index = 0;
+    modalState.color = null;
 
     fillModalTexts(product);
+    renderVariants(product);
 
     if (product.link) {
       modalBuy.hidden = false;
@@ -319,10 +336,208 @@
     lightbox.hidden = true;
   });
 
+  /* ---------- Выбор цвета ---------- */
+
+  var modalVariants = document.getElementById("modal-variants");
+  var variantChips = document.getElementById("variant-chips");
+
+  function trColor(color) {
+    if (lang === "ru") return color;
+    return (I18N.colors && I18N.colors[lang] && I18N.colors[lang][color]) || color;
+  }
+
+  function renderVariants(product) {
+    var list = product.variants || [];
+    if (!list.length) {
+      modalVariants.hidden = true;
+      variantChips.innerHTML = "";
+      modalState.color = null;
+      return;
+    }
+    modalVariants.hidden = false;
+    modalState.color = modalState.color || list[0];
+    variantChips.innerHTML = list.map(function (color) {
+      return '<button type="button" class="variant-chip' +
+        (color === modalState.color ? " is-active" : "") +
+        '" data-color="' + escapeHtml(color) + '">' + escapeHtml(trColor(color)) + "</button>";
+    }).join("");
+  }
+
+  variantChips.addEventListener("click", function (event) {
+    var chip = event.target.closest(".variant-chip");
+    if (!chip) return;
+    modalState.color = chip.dataset.color;
+    variantChips.querySelectorAll(".variant-chip").forEach(function (el) {
+      el.classList.toggle("is-active", el === chip);
+    });
+  });
+
+  /* ---------- Виджет поддержки ---------- */
+
+  var supportFab = document.getElementById("support-fab");
+  var supportPanel = document.getElementById("support-panel");
+  var supportMsgs = document.getElementById("support-msgs");
+  var supportForm = document.getElementById("support-form");
+  var supportText = document.getElementById("support-text");
+  var supportClose = document.getElementById("support-close");
+  var modalSupport = document.getElementById("modal-support");
+  var supGreeted = false;
+
+  var SUPPORT_TG = "https://t.me/proscooter";
+  var SUPPORT_WA = "https://wa.me/79000000000";
+  var SUPPORT_MAIL = "andreyrk2016@gmail.com";
+
+  var INTENTS = [
+    [/привет|здрав|hello|\bhi\b|hola|hey/i, "sup_a_hi"],
+    [/достав|delivery|ship|env[ií]o|entrega/i, "sup_a_delivery"],
+    [/оплат|\bплат|pay|pago/i, "sup_a_payment"],
+    [/размер|рост\b|size|talla|medida/i, "sup_a_size"],
+    [/цена|цен[ыуе]|стоим|price|precio|cu[aá]nto/i, "sup_a_price"],
+    [/куп[ил]|заказ|\bbuy\b|order|comprar|pedido/i, "sup_a_buy"]
+  ];
+
+  function supMsg(html, who) {
+    var div = document.createElement("div");
+    div.className = "sup-msg sup-msg--" + who;
+    div.innerHTML = html;
+    supportMsgs.appendChild(div);
+    supportMsgs.scrollTop = supportMsgs.scrollHeight;
+  }
+
+  function openSupport(prefill) {
+    supportPanel.hidden = false;
+    if (!supGreeted) {
+      supGreeted = true;
+      supMsg(escapeHtml(t("sup_greet")), "bot");
+    }
+    if (prefill) supportText.value = prefill;
+    supportText.focus();
+  }
+
+  supportFab.addEventListener("click", function () {
+    if (supportPanel.hidden) openSupport();
+    else supportPanel.hidden = true;
+  });
+
+  supportClose.addEventListener("click", function () {
+    supportPanel.hidden = true;
+  });
+
+  supportForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    var text = supportText.value.trim();
+    if (!text) return;
+    supportText.value = "";
+    supMsg(escapeHtml(text), "user");
+
+    var answerKey = null;
+    for (var i = 0; i < INTENTS.length; i++) {
+      if (INTENTS[i][0].test(text)) { answerKey = INTENTS[i][1]; break; }
+    }
+
+    setTimeout(function () {
+      if (answerKey) {
+        supMsg(escapeHtml(t(answerKey)), "bot");
+        return;
+      }
+      var enc = encodeURIComponent(text);
+      supMsg(
+        "<div>" + escapeHtml(t("sup_fallback")) + "</div>" +
+        '<div class="sup-actions">' +
+        '<a href="' + SUPPORT_TG + '" target="_blank" rel="noopener">' + escapeHtml(t("sup_tg_btn")) + "</a>" +
+        '<a href="' + SUPPORT_WA + "?text=" + enc + '" target="_blank" rel="noopener">' + escapeHtml(t("sup_wa_btn")) + "</a>" +
+        '<a href="mailto:' + SUPPORT_MAIL + "?subject=PRO%20SCOOTER&body=" + enc + '">' + escapeHtml(t("sup_mail_btn")) + "</a>" +
+        "</div>",
+        "bot"
+      );
+    }, 450);
+  });
+
+  modalSupport.addEventListener("click", function () {
+    var product = modalState.product;
+    var prefill = product
+      ? t("sup_product_prefix") + trName(product) +
+        (modalState.color ? " (" + trColor(modalState.color) + ")" : "") + " — "
+      : "";
+    modal.close();
+    openSupport(prefill);
+  });
+
+  /* ---------- Эффекты ---------- */
+
+  var motionOk = window.matchMedia("(prefers-reduced-motion: no-preference)").matches;
+  var finePointer = window.matchMedia("(pointer: fine)").matches;
+
+  var revealObserver = null;
+  if (motionOk && "IntersectionObserver" in window) {
+    revealObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+  }
+
+  function observeReveals() {
+    if (!revealObserver) return;
+    document.querySelectorAll(".card, .how__step, .contact-card").forEach(function (el, i) {
+      if (el.classList.contains("reveal")) return;
+      el.classList.add("reveal");
+      el.style.transitionDelay = (i % 4) * 60 + "ms";
+      revealObserver.observe(el);
+    });
+  }
+
+  // Счётчики в хиро
+  document.querySelectorAll(".stat__num").forEach(function (el) {
+    var target = parseInt(el.dataset.target, 10) || 0;
+    if (!motionOk) { el.textContent = target; return; }
+    var start = null;
+    function tick(ts) {
+      if (!start) start = ts;
+      var progress = Math.min((ts - start) / 900, 1);
+      el.textContent = Math.round(target * (1 - Math.pow(1 - progress, 3)));
+      if (progress < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  });
+
+  // 3D-наклон карточек за курсором
+  if (motionOk && finePointer) {
+    grid.addEventListener("mousemove", function (event) {
+      var card = event.target.closest(".card");
+      if (!card) return;
+      var rect = card.getBoundingClientRect();
+      var x = (event.clientX - rect.left) / rect.width - 0.5;
+      var y = (event.clientY - rect.top) / rect.height - 0.5;
+      card.style.transform = "translateY(-5px) rotateX(" + (-y * 5).toFixed(2) +
+        "deg) rotateY(" + (x * 5).toFixed(2) + "deg)";
+    });
+    grid.addEventListener("mouseout", function (event) {
+      var card = event.target.closest(".card");
+      if (card && !card.contains(event.relatedTarget)) card.style.transform = "";
+    });
+  }
+
+  // Живой глоу в хиро за курсором
+  var hero = document.querySelector(".hero");
+  var heroBlob = document.querySelector(".hero__blob--1");
+  if (motionOk && finePointer && hero && heroBlob) {
+    hero.addEventListener("mousemove", function (event) {
+      var rect = hero.getBoundingClientRect();
+      var x = (event.clientX - rect.left) / rect.width - 0.5;
+      var y = (event.clientY - rect.top) / rect.height - 0.5;
+      heroBlob.style.transform = "translate(" + (x * 44).toFixed(0) + "px," + (y * 44).toFixed(0) + "px)";
+    });
+  }
+
   /* ---------- Старт ---------- */
 
   renderLangSwitch();
   applyStaticTexts();
   renderChips();
   renderGrid();
+  observeReveals();
 })();

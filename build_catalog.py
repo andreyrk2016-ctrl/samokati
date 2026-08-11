@@ -244,6 +244,13 @@ def apply_descriptions(products):
             product["description"] = text
 
 
+def apply_variants(products):
+    """variants.json: {"название товара": ["Чёрный", "Белый", ...]}."""
+    variants = load_json_sidecar("variants.json")
+    for product in products:
+        product["variants"] = variants.get(product["name"], [])
+
+
 def load_display_names():
     """names.json: {"имя папки (без ценового хвоста)": "красивое название"}."""
     names_file = ROOT / "names.json"
@@ -297,6 +304,7 @@ def main():
     apply_yuan_prices(products)
     apply_display_names(products)
     apply_descriptions(products)
+    apply_variants(products)
 
     products.sort(key=lambda p: (p["category"] != "Самокаты",
                                  p["category"].casefold(),
