@@ -4,7 +4,6 @@ window.I18N = {
   langs: [
     { code: "ru", label: "RU" },
     { code: "en", label: "EN" },
-    { code: "zh", label: "中文" },
     { code: "es", label: "ES" }
   ],
 
@@ -27,8 +26,8 @@ window.I18N = {
       how1_t: "Выбери модель", how1_p: "Открой карточку товара — внутри все фото и описание.",
       how2_t: "Жми «Купить»", how2_p: "Кнопка откроет страницу товара с актуальной ценой и наличием.",
       how3_t: "Есть вопросы?", how3_p: "Напиши нам — поможем подобрать самокат или запчасть под твой стиль.",
-      contacts_title: "Контакты", contacts_sub: "Пиши в любой мессенджер — отвечаем быстро.",
-      c_tg: "Telegram", c_phone: "Телефон", c_mail: "Почта",
+      contacts_title: "Контакты", contacts_sub: "Пиши в любой мессенджер и подписывайся на соцсети — отвечаем быстро.",
+      c_tg: "Telegram-канал", c_tiktok: "TikTok", c_inst: "Instagram", c_phone: "Телефон", c_mail: "Почта",
       footer_brand: "PRO SCOOTER SHOP — трюковые самокаты и запчасти", to_top: "Наверх ↑"
     },
     en: {
@@ -49,8 +48,8 @@ window.I18N = {
       how1_t: "Pick a model", how1_p: "Open the product card — all photos and specs are inside.",
       how2_t: "Hit “Buy”", how2_p: "The button opens the product page with the current price and stock.",
       how3_t: "Questions?", how3_p: "Message us — we’ll help you pick a scooter or a part for your style.",
-      contacts_title: "Contacts", contacts_sub: "Message us anywhere — we reply fast.",
-      c_tg: "Telegram", c_phone: "Phone", c_mail: "Email",
+      contacts_title: "Contacts", contacts_sub: "Message us and follow our socials — we reply fast.",
+      c_tg: "Telegram channel", c_tiktok: "TikTok", c_inst: "Instagram", c_phone: "Phone", c_mail: "Email",
       footer_brand: "PRO SCOOTER SHOP — pro scooters & parts", to_top: "Back to top ↑"
     },
     zh: {
@@ -93,8 +92,8 @@ window.I18N = {
       how1_t: "Elige un modelo", how1_p: "Abre la ficha del producto: dentro están todas las fotos y especificaciones.",
       how2_t: "Pulsa «Comprar»", how2_p: "El botón abre la página del producto con el precio y stock actuales.",
       how3_t: "¿Dudas?", how3_p: "Escríbenos y te ayudamos a elegir el patinete o repuesto para tu estilo.",
-      contacts_title: "Contactos", contacts_sub: "Escríbenos por cualquier canal, respondemos rápido.",
-      c_tg: "Telegram", c_phone: "Teléfono", c_mail: "Correo",
+      contacts_title: "Contactos", contacts_sub: "Escríbenos y síguenos en redes, respondemos rápido.",
+      c_tg: "Canal de Telegram", c_tiktok: "TikTok", c_inst: "Instagram", c_phone: "Teléfono", c_mail: "Correo",
       footer_brand: "PRO SCOOTER SHOP — patinetes de trucos y repuestos", to_top: "Arriba ↑"
     }
   },

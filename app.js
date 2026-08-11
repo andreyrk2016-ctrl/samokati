@@ -36,7 +36,8 @@
   var I18N = window.I18N || { langs: [{ code: "ru", label: "RU" }], ui: { ru: {} } };
   var lang = "ru";
   try { lang = localStorage.getItem("psshop-lang") || "ru"; } catch (e) {}
-  if (!I18N.ui[lang]) lang = "ru";
+  var validLangs = I18N.langs.map(function (item) { return item.code; });
+  if (validLangs.indexOf(lang) === -1) lang = "ru";
 
   function t(key) {
     return (I18N.ui[lang] && I18N.ui[lang][key]) || (I18N.ui.ru && I18N.ui.ru[key]) || "";
