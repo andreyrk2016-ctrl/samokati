@@ -109,6 +109,10 @@
     renderGrid();
     if (typeof renderViewed === "function") renderViewed();
     if (typeof renderAuthState === "function") renderAuthState();
+    if (typeof renderOrdersPage === "function") {
+      var op = document.getElementById("orders-page");
+      if (op && !op.hidden) renderOrdersPage();
+    }
     if (modal.open && modalState.product) {
       fillModalTexts(modalState.product);
       renderVariants(modalState.product);
@@ -934,8 +938,7 @@
   document.getElementById("checkout-close").addEventListener("click", hideCheckoutPage);
 
   document.getElementById("checkout-orders").addEventListener("click", function () {
-    hideCheckoutPage();
-    openOrdersPane();
+    showOrdersPage();
   });
 
   document.getElementById("checkout-support").addEventListener("click", function () {
@@ -1044,11 +1047,10 @@
   var codeResendBtn = document.getElementById("code-resend");
   var codeTestNote = document.getElementById("code-test-note");
 
-  var authOrders = document.getElementById("auth-orders");
-  var ordersListEl = document.getElementById("orders-list");
-  var ordersEmptyEl = document.getElementById("orders-empty");
   var ordersCountEl = document.getElementById("orders-count");
   var profileLabel = document.getElementById("profile-label");
+  var profileAvatar = document.getElementById("profile-avatar");
+  var profileEmail = document.getElementById("profile-email");
 
   function renderAuthState() {
     var user = window.AUTH ? AUTH.user : null;
@@ -1059,10 +1061,11 @@
     var keepCode = !user && !authCode.hidden;
     authForms.hidden = !!user || keepCode;
     authProfile.hidden = !user;
-    authOrders.hidden = true;
     authCode.hidden = !keepCode;
     if (user) {
-      profileHello.textContent = t("auth_hello") + ", " + (user.name || user.email) + "!";
+      profileHello.textContent = t("auth_hello") + ", " + (user.name || user.email).split("@")[0] + "!";
+      profileAvatar.textContent = (user.name || user.email || "?").charAt(0).toUpperCase();
+      profileEmail.textContent = user.email || "";
     }
     favsCountEl.textContent = window.AUTH ? AUTH.favs().length : 0;
     ordersCountEl.textContent = ordersCount();
@@ -1081,36 +1084,85 @@
     } catch (e) { return ""; }
   }
 
-  function renderOrders() {
-    var orders = loadOrders();
-    ordersListEl.innerHTML = orders.slice().reverse().map(function (order) {
-      var lines = order.items.map(function (item) {
-        var product = productByName(item.name);
-        return (product ? trName(product) : item.name) +
-          (item.color ? " (" + trColor(item.color) + ")" : "") + " ×" + item.qty;
-      }).join(", ");
-      var dateStr = orderDate(order.ts);
-      var shipStr = order.ship && order.ship.name
-        ? "📦 " + order.ship.name + ", " + order.ship.contact + (order.ship.address ? ", " + order.ship.address : "")
-        : "";
-      return '<div class="order-row">' +
-        '<div class="order-row__head"><strong>' + escapeHtml(t("order_label")) + " №" + order.num +
-        '</strong><span class="checkout-price">$' + order.total.toLocaleString("en-US") + "</span></div>" +
-        (dateStr ? '<div class="order-row__date">' + escapeHtml(dateStr) + "</div>" : "") +
-        '<div class="order-row__items">' + escapeHtml(lines) + "</div>" +
-        (shipStr ? '<div class="order-row__date">' + escapeHtml(shipStr) + "</div>" : "") +
-        '<div class="order-row__status">' + escapeHtml(t("order_status")) + "</div></div>";
-    }).join("");
-    ordersEmptyEl.hidden = orders.length > 0;
+  /* ---------- Страница «Мои товары» ---------- */
+
+  var ordersPage = document.getElementById("orders-page");
+  var ordersPageList = document.getElementById("orders-page-list");
+  var ordersPageEmpty = document.getElementById("orders-page-empty");
+
+  function orderItemRowHtml(item) {
+    var product = productByName(item.name);
+    var img = product && product.images.length
+      ? '<img src="' + product.images[0] + '" alt="" loading="lazy">'
+      : '<span class="order-item__noimg">🛴</span>';
+    var name = product ? trName(product) : item.name;
+    var lineTotal = item.price ? "$" + (item.price * item.qty).toLocaleString("en-US") : "";
+    return '<div class="order-item">' +
+      '<span class="order-item__photo">' + img + "</span>" +
+      '<span class="order-item__name">' + escapeHtml(name) +
+      (item.color ? ' <em class="order-item__color">' + escapeHtml(trColor(item.color)) + "</em>" : "") +
+      "</span>" +
+      '<span class="order-item__qty">×' + item.qty + "</span>" +
+      '<span class="order-item__price">' + lineTotal + "</span>" +
+      "</div>";
   }
 
-  function openOrdersPane() {
-    renderOrders();
-    authForms.hidden = true;
-    authProfile.hidden = true;
-    authOrders.hidden = false;
-    if (!authModal.open) authModal.showModal();
+  function renderOrdersPage() {
+    var orders = loadOrders();
+    ordersPageList.innerHTML = orders.slice().reverse().map(function (order) {
+      var dateStr = orderDate(order.ts);
+      var shipStr = order.ship && order.ship.name
+        ? order.ship.name + " · " + order.ship.contact + (order.ship.address ? " · " + order.ship.address : "")
+        : "";
+      return '<article class="order-card">' +
+        '<header class="order-card__head">' +
+        "<div><strong>" + escapeHtml(t("order_label")) + " №" + order.num + "</strong>" +
+        (dateStr ? '<span class="order-card__date">' + escapeHtml(dateStr) + "</span>" : "") + "</div>" +
+        '<span class="order-card__status">' + escapeHtml(t("order_status")) + "</span>" +
+        "</header>" +
+        '<div class="order-card__items">' + order.items.map(orderItemRowHtml).join("") + "</div>" +
+        '<footer class="order-card__foot">' +
+        (shipStr ? '<span class="order-card__ship">📦 ' + escapeHtml(shipStr) + "</span>" : "<span></span>") +
+        '<span class="order-card__total">' + escapeHtml(t("cart_total")) + ' <strong class="checkout-price">$' +
+        order.total.toLocaleString("en-US") + "</strong></span>" +
+        "</footer></article>";
+    }).join("");
+    ordersPageEmpty.hidden = orders.length > 0;
   }
+
+  function showOrdersPage() {
+    if (authModal.open) authModal.close();
+    hideCheckoutPage();
+    renderOrdersPage();
+    ordersPage.hidden = false;
+    document.body.style.overflow = "hidden";
+    ordersPage.scrollTop = 0;
+    if (location.hash !== "#orders") {
+      try { history.pushState(null, "", "#orders"); } catch (e) {}
+    }
+  }
+
+  function hideOrdersPage() {
+    ordersPage.hidden = true;
+    document.body.style.overflow = "";
+    if (location.hash === "#orders") {
+      try { history.pushState(null, "", location.pathname + location.search); } catch (e) {}
+    }
+  }
+
+  window.addEventListener("popstate", function () {
+    if (location.hash !== "#orders" && !ordersPage.hidden) {
+      ordersPage.hidden = true;
+      document.body.style.overflow = "";
+    }
+  });
+
+  document.getElementById("orders-close").addEventListener("click", hideOrdersPage);
+
+  document.getElementById("orders-to-catalog").addEventListener("click", function () {
+    hideOrdersPage();
+    document.getElementById("catalog").scrollIntoView({ behavior: "smooth" });
+  });
 
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
 
@@ -1303,15 +1355,11 @@
     });
   });
 
-  document.getElementById("profile-orders").addEventListener("click", openOrdersPane);
+  document.getElementById("profile-orders").addEventListener("click", showOrdersPage);
 
   document.getElementById("nav-orders").addEventListener("click", function (event) {
     event.preventDefault();
-    openOrdersPane();
-  });
-
-  document.getElementById("orders-back").addEventListener("click", function () {
-    renderAuthState();
+    showOrdersPage();
   });
 
   document.getElementById("profile-favs").addEventListener("click", function () {
