@@ -897,6 +897,22 @@
     if (!shipAddress.value) shipAddress.value = saved.address || "";
   }
 
+  /* Точный адрес: есть слова (город/улица) и есть номер дома или квартиры */
+  function addressLooksFull(addr) {
+    if (addr.length < 8) return false;
+    if (!/\d/.test(addr)) return false;                 // нет номера дома/квартиры
+    if (!/[a-zа-яё]{3,}/i.test(addr)) return false;     // нет названия улицы или города
+    return addr.split(/[\s,./-]+/).filter(Boolean).length >= 2;
+  }
+
+  // Пока пользователь исправляет поле — убираем подсветку ошибки
+  [shipName, shipContact, shipAddress].forEach(function (input) {
+    input.addEventListener("input", function () {
+      input.classList.remove("is-invalid");
+      shipError.hidden = true;
+    });
+  });
+
   checkoutMain.addEventListener("click", function (event) {
     if (!event.target.closest(".pay-option")) return;
     var ship = {
@@ -904,16 +920,21 @@
       contact: shipContact.value.trim(),
       address: shipAddress.value.trim()
     };
-    if (!ship.name || !ship.contact) {
+    var missing = !ship.name || !ship.contact;
+    var badAddress = !addressLooksFull(ship.address);
+    if (missing || badAddress) {
+      shipError.textContent = t(missing ? "ship_err" : "ship_err_addr");
       shipError.hidden = false;
       shipName.classList.toggle("is-invalid", !ship.name);
       shipContact.classList.toggle("is-invalid", !ship.contact);
+      shipAddress.classList.toggle("is-invalid", badAddress);
       document.querySelector(".checkout-ship").scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
     shipError.hidden = true;
     shipName.classList.remove("is-invalid");
     shipContact.classList.remove("is-invalid");
+    shipAddress.classList.remove("is-invalid");
     storeWrite("psshop-ship", ship); // запомним для следующего заказа
     // Тестовый режим: оплата проходит бесплатно, заказ сохраняется.
     var orders = loadOrders();
