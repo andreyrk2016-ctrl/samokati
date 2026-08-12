@@ -17,6 +17,8 @@
 </head>
 <body>
 
+  <div class="announce"><span data-i18n="announce">🔥 Тестовый режим: оплата не списывается — оформляйте заказы и пробуйте!</span></div>
+
   <header class="topbar" id="top">
     <div class="container topbar__inner">
       <a class="logo" href="#top">
@@ -267,6 +269,7 @@
         <div class="modal__tag-row">
           <span class="card__tag" id="modal-tag"></span>
           <button type="button" class="modal__fav" id="modal-fav">♡ <span data-i18n="fav_add">В избранное</span></button>
+          <button type="button" class="modal__fav modal__share" id="modal-share" aria-label="Скопировать ссылку">🔗 <span data-i18n="share">Ссылка</span></button>
         </div>
         <h3 class="modal__name" id="modal-name"></h3>
         <p class="modal__price" id="modal-price"></p>
@@ -299,6 +302,13 @@
         <div class="checkout-page__grid">
           <div id="checkout-items"></div>
           <aside class="checkout-aside">
+            <div class="checkout-ship">
+              <h3 class="checkout-ship__title" data-i18n="ship_title">Данные для доставки</h3>
+              <input type="text" id="ship-name" data-i18n-placeholder="ship_name" placeholder="Имя и фамилия" autocomplete="name">
+              <input type="text" id="ship-contact" data-i18n-placeholder="ship_contact" placeholder="Телефон или Telegram" autocomplete="tel">
+              <input type="text" id="ship-address" data-i18n-placeholder="ship_address" placeholder="Адрес доставки (город, улица)" autocomplete="street-address">
+              <p class="auth-error" id="ship-error" hidden data-i18n="ship_err">Заполните имя и контакт — иначе не сможем связаться.</p>
+            </div>
             <div class="cart-total">
               <span data-i18n="cart_total">Итого:</span>
               <span class="checkout-price" id="checkout-total"></span>
@@ -429,6 +439,12 @@
       <a class="support-quick__btn" href="https://wa.me/79000000000" target="_blank" rel="noopener">WhatsApp</a>
     </div>
     <div class="support-msgs" id="support-msgs"></div>
+    <div class="support-chips" id="support-chips">
+      <button type="button" data-msg="sup_chip1" data-i18n="sup_chip1">Доставка</button>
+      <button type="button" data-msg="sup_chip2" data-i18n="sup_chip2">Оплата</button>
+      <button type="button" data-msg="sup_chip3" data-i18n="sup_chip3">Размеры</button>
+      <button type="button" data-msg="sup_chip4" data-i18n="sup_chip4">Хочу заказать</button>
+    </div>
     <form class="support-input" id="support-form">
       <input type="text" id="support-text" placeholder="Ваш вопрос..." autocomplete="off" data-i18n-placeholder="sup_ph">
       <button type="submit" class="support-send" aria-label="Отправить">➤</button>

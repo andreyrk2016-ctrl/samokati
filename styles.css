@@ -399,6 +399,40 @@ a { color: inherit; text-decoration: none; }
   background: var(--panel);
 }
 
+.checkout-ship {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-bottom: 16px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--line);
+}
+
+.checkout-ship__title {
+  margin: 0 0 2px;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.checkout-ship input {
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.checkout-ship input:focus { border-color: var(--accent); }
+
+.checkout-ship input.is-invalid { border-color: #ff6b6b; }
+
+.checkout-ship input::placeholder { color: var(--muted); }
+
 .checkout-card {
   display: flex;
   gap: 16px;
@@ -553,9 +587,13 @@ a { color: inherit; text-decoration: none; }
 .modal__tag-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 10px;
+  flex-wrap: wrap;
 }
+
+.modal__tag-row .modal__fav { margin-left: auto; }
+
+.modal__tag-row .modal__share { margin-left: 0; }
 
 .modal__fav {
   border: 1px solid var(--line);
@@ -1735,6 +1773,36 @@ a { color: inherit; text-decoration: none; }
   overflow-y: auto;
 }
 
+.support-chips {
+  display: flex;
+  gap: 6px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--line);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.support-chips::-webkit-scrollbar { display: none; }
+
+.support-chips button {
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--panel-2);
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 12.5px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.support-chips button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .sup-msg {
   max-width: 85%;
   padding: 9px 13px;
@@ -2105,3 +2173,15 @@ a { color: inherit; text-decoration: none; }
   border: 2px solid var(--bg);
 }
 ::-webkit-scrollbar-thumb:hover { background: #3a4234; }
+
+/* Полоса «тестовый режим» */
+
+.announce {
+  background: var(--accent);
+  color: var(--accent-ink);
+  text-align: center;
+  font-weight: 800;
+  font-size: 13px;
+  padding: 8px 16px;
+  letter-spacing: 0.01em;
+}

@@ -595,6 +595,14 @@
     supportPanel.hidden = true;
   });
 
+  // Быстрые вопросы одним нажатием
+  document.getElementById("support-chips").addEventListener("click", function (event) {
+    var btn = event.target.closest("button[data-msg]");
+    if (!btn) return;
+    supportText.value = t(btn.dataset.msg);
+    supportForm.dispatchEvent(new Event("submit", { cancelable: true }));
+  });
+
   supportForm.addEventListener("submit", function (event) {
     event.preventDefault();
     var text = supportText.value.trim();
@@ -806,12 +814,43 @@
       return sum + (product && typeof product.price === "number" ? product.price * item.qty : 0);
     }, 0);
     checkoutTotalEl.textContent = "$" + total.toLocaleString("en-US");
+    prefillShip();
+    shipError.hidden = true;
     if (modal.open) modal.close();
     showCheckoutPage();
   }
 
+  var shipName = document.getElementById("ship-name");
+  var shipContact = document.getElementById("ship-contact");
+  var shipAddress = document.getElementById("ship-address");
+  var shipError = document.getElementById("ship-error");
+
+  function prefillShip() {
+    var saved = storeRead("psshop-ship", null);
+    if (!saved) return;
+    if (!shipName.value) shipName.value = saved.name || "";
+    if (!shipContact.value) shipContact.value = saved.contact || "";
+    if (!shipAddress.value) shipAddress.value = saved.address || "";
+  }
+
   checkoutMain.addEventListener("click", function (event) {
     if (!event.target.closest(".pay-option")) return;
+    var ship = {
+      name: shipName.value.trim(),
+      contact: shipContact.value.trim(),
+      address: shipAddress.value.trim()
+    };
+    if (!ship.name || !ship.contact) {
+      shipError.hidden = false;
+      shipName.classList.toggle("is-invalid", !ship.name);
+      shipContact.classList.toggle("is-invalid", !ship.contact);
+      document.querySelector(".checkout-ship").scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    shipError.hidden = true;
+    shipName.classList.remove("is-invalid");
+    shipContact.classList.remove("is-invalid");
+    storeWrite("psshop-ship", ship); // запомним для следующего заказа
     // Тестовый режим: оплата проходит бесплатно, заказ сохраняется.
     var orders = loadOrders();
     var total = 0;
@@ -821,7 +860,7 @@
       total += price * item.qty;
       return { name: item.name, color: item.color, qty: item.qty, price: price };
     });
-    orders.push({ num: orders.length + 1, items: orderItems, total: total, ts: Date.now() });
+    orders.push({ num: orders.length + 1, items: orderItems, total: total, ts: Date.now(), ship: ship });
     storeWrite(ordersKey(), orders);
     if (checkoutFromCart) {
       cartData = [];
@@ -843,7 +882,12 @@
     var prefill = t("pay_order_prefix") + checkoutList.map(function (item) {
       return trName(productByName(item.name) || { name: item.name }) +
         (item.color ? " (" + trColor(item.color) + ")" : "") + " ×" + item.qty;
-    }).join(", ") + " — ";
+    }).join(", ");
+    var ship = storeRead("psshop-ship", null);
+    if (ship && ship.name) {
+      prefill += " (" + ship.name + ", " + ship.contact + (ship.address ? ", " + ship.address : "") + ")";
+    }
+    prefill += " — ";
     hideCheckoutPage();
     openSupport(prefill);
   });
@@ -873,6 +917,39 @@
     btn.textContent = "✓";
     setTimeout(function () { btn.textContent = t("add_cart"); }, 800);
   });
+
+  /* Ссылка на товар: #p<id> открывает карточку, кнопка копирует адрес */
+
+  document.getElementById("modal-share").addEventListener("click", function () {
+    if (!modalState.product) return;
+    var url = location.origin + location.pathname + "#p" + modalState.product.id;
+    function done() { toast("🔗", "toast_link"); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(done).catch(function () { fallbackCopy(url); done(); });
+    } else {
+      fallbackCopy(url);
+      done();
+    }
+  });
+
+  function fallbackCopy(text) {
+    var area = document.createElement("textarea");
+    area.value = text;
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.appendChild(area);
+    area.select();
+    try { document.execCommand("copy"); } catch (e) {}
+    document.body.removeChild(area);
+  }
+
+  var hashMatch = location.hash.match(/^#p(\d+)$/);
+  if (hashMatch) {
+    var sharedProduct = products.find(function (p) { return p.id === Number(hashMatch[1]); });
+    if (sharedProduct) {
+      setTimeout(function () { openModal(sharedProduct.id); }, 300);
+    }
+  }
 
   modalSupport.addEventListener("click", function () {
     var product = modalState.product;
@@ -953,11 +1030,15 @@
           (item.color ? " (" + trColor(item.color) + ")" : "") + " ×" + item.qty;
       }).join(", ");
       var dateStr = orderDate(order.ts);
+      var shipStr = order.ship && order.ship.name
+        ? "📦 " + order.ship.name + ", " + order.ship.contact + (order.ship.address ? ", " + order.ship.address : "")
+        : "";
       return '<div class="order-row">' +
         '<div class="order-row__head"><strong>' + escapeHtml(t("order_label")) + " №" + order.num +
         '</strong><span class="checkout-price">$' + order.total.toLocaleString("en-US") + "</span></div>" +
         (dateStr ? '<div class="order-row__date">' + escapeHtml(dateStr) + "</div>" : "") +
         '<div class="order-row__items">' + escapeHtml(lines) + "</div>" +
+        (shipStr ? '<div class="order-row__date">' + escapeHtml(shipStr) + "</div>" : "") +
         '<div class="order-row__status">' + escapeHtml(t("order_status")) + "</div></div>";
     }).join("");
     ordersEmptyEl.hidden = orders.length > 0;
