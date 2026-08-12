@@ -2,8 +2,12 @@
 // Пока ключи не заданы, сайт работает в тестовом режиме: код подтверждения
 // показывается прямо на экране, а письма покупателям не отправляются.
 //
+// Service ID уже получен: service_lkr3szy.
+// Осталось вписать Template ID (шаг 3 инструкции) и Public Key (шаг 4) —
+// тогда строки ниже можно раскомментировать, и почта заработает.
+//
 // window.EMAILJS_CONFIG = {
-//   serviceId: "service_ab12cde",
+//   serviceId: "service_lkr3szy",
 //   templateId: "template_xy34zw",
 //   publicKey: "AbCdEfGh123456_"
 // };
