@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PRO SCOOTER SHOP — трюковые самокаты и запчасти</title>
   <meta name="description" content="PRO SCOOTER SHOP — магазин трюковых самокатов и запчастей: деки, рули, колёса. Подбор модели под твой стиль катания.">
+  <meta name="theme-color" content="#0a0c10">
+  <meta property="og:title" content="PRO SCOOTER SHOP — трюковые самокаты и запчасти">
+  <meta property="og:description" content="Деки, рули, колёса и готовые комплиты. Цены в долларах, доставка по всему миру.">
+  <meta property="og:type" content="website">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛴</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -41,27 +45,30 @@
       <div class="hero__blob hero__blob--1"></div>
       <div class="hero__blob hero__blob--2"></div>
       <div class="container hero__inner">
-        <p class="hero__kicker" data-i18n="kicker">// магазин для райдеров</p>
-        <h1 class="hero__title">
-          <span data-i18n="hero_1">Трюковые</span><br>
-          <span class="hero__title-accent" data-i18n="hero_2">самокаты</span><br>
-          <span class="hero__title-outline" data-i18n="hero_3">и запчасти</span>
-        </h1>
-        <p class="hero__sub" data-i18n="hero_sub">Деки, рули, колёса и готовые комплиты, которые переживут любой стрит и парк. Выбирай модель — ссылка приведёт прямо к товару.</p>
-        <div class="hero__actions">
-          <a class="btn btn--accent" href="#catalog" data-i18n="btn_catalog">Смотреть каталог</a>
-          <a class="btn btn--ghost" href="#how" data-i18n="btn_how">Как купить</a>
-        </div>
-        <div class="hero__stats">
-          <div class="stat">
-            <span class="stat__num" data-target="37">0</span>
-            <span class="stat__label" data-i18n="stat_products">товаров</span>
+        <div class="hero__text">
+          <p class="hero__kicker" data-i18n="kicker">// магазин для райдеров</p>
+          <h1 class="hero__title">
+            <span data-i18n="hero_1">Трюковые</span><br>
+            <span class="hero__title-accent" data-i18n="hero_2">самокаты</span><br>
+            <span class="hero__title-outline" data-i18n="hero_3">и запчасти</span>
+          </h1>
+          <p class="hero__sub" data-i18n="hero_sub">Деки, рули, колёса и готовые комплиты, которые переживут любой стрит и парк. Выбирай модель — ссылка приведёт прямо к товару.</p>
+          <div class="hero__actions">
+            <a class="btn btn--accent" href="#catalog" data-i18n="btn_catalog">Смотреть каталог</a>
+            <a class="btn btn--ghost" href="#how" data-i18n="btn_how">Как купить</a>
           </div>
-          <div class="stat">
-            <span class="stat__num" data-target="7">0</span>
-            <span class="stat__label" data-i18n="stat_cats">категорий</span>
+          <div class="hero__stats">
+            <div class="stat">
+              <span class="stat__num" data-target="37">0</span>
+              <span class="stat__label" data-i18n="stat_products">товаров</span>
+            </div>
+            <div class="stat">
+              <span class="stat__num" data-target="7">0</span>
+              <span class="stat__label" data-i18n="stat_cats">категорий</span>
+            </div>
           </div>
         </div>
+        <div class="hero__visual" id="hero-visual" aria-hidden="true"></div>
       </div>
     </section>
 
@@ -70,6 +77,39 @@
         <span data-i18n="marquee">Самокаты ✕ Запчасти ✕ Деки ✕ Рули ✕ Колёса ✕ Трюки ✕ Стрит ✕ Парк ✕ </span><span data-i18n="marquee">Самокаты ✕ Запчасти ✕ Деки ✕ Рули ✕ Колёса ✕ Трюки ✕ Стрит ✕ Парк ✕ </span>
       </div>
     </div>
+
+    <section class="perks">
+      <div class="container perks__grid">
+        <div class="perk">
+          <span class="perk__icon">🚚</span>
+          <div>
+            <h3 data-i18n="perk1_t">Доставка по всему миру</h3>
+            <p data-i18n="perk1_p">Отправим заказ в любой город — сроки уточнит менеджер.</p>
+          </div>
+        </div>
+        <div class="perk">
+          <span class="perk__icon">✅</span>
+          <div>
+            <h3 data-i18n="perk2_t">Проверенные товары</h3>
+            <p data-i18n="perk2_p">Каждая модель протестирована райдерами в стрите и парке.</p>
+          </div>
+        </div>
+        <div class="perk">
+          <span class="perk__icon">💬</span>
+          <div>
+            <h3 data-i18n="perk3_t">Живая поддержка</h3>
+            <p data-i18n="perk3_p">Чат на сайте, Telegram и WhatsApp — отвечаем быстро.</p>
+          </div>
+        </div>
+        <div class="perk">
+          <span class="perk__icon">🔒</span>
+          <div>
+            <h3 data-i18n="perk4_t">Безопасная оплата</h3>
+            <p data-i18n="perk4_p">Apple Pay и банковские карты — платёж защищён.</p>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <section class="catalog" id="catalog">
       <div class="container">
@@ -84,6 +124,11 @@
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
             <input type="search" id="search" placeholder="Поиск по названию..." autocomplete="off" data-i18n-placeholder="search_ph">
           </label>
+          <select id="sort" class="sort-select" aria-label="Сортировка">
+            <option value="default" data-i18n="sort_default">По умолчанию</option>
+            <option value="cheap" data-i18n="sort_cheap">Сначала дешевле</option>
+            <option value="exp" data-i18n="sort_exp">Сначала дороже</option>
+          </select>
         </div>
         <div class="grid" id="grid"></div>
         <p class="empty" id="empty" hidden data-i18n="empty">Ничего не найдено. Попробуйте изменить запрос или категорию.</p>
@@ -109,6 +154,34 @@
             <h3 data-i18n="how3_t">Есть вопросы?</h3>
             <p data-i18n="how3_p">Напиши нам — поможем подобрать самокат или запчасть под твой стиль.</p>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq" id="faq">
+      <div class="container">
+        <h2 class="section-title" data-i18n="faq_title">Частые вопросы</h2>
+        <div class="faq__list">
+          <details class="faq__item">
+            <summary><span data-i18n="faq1_q">Сколько идёт доставка?</span><span class="faq__chevron">▾</span></summary>
+            <p data-i18n="faq1_a">Обычно 2–4 недели в зависимости от города. После заказа менеджер напишет вам точные сроки и трек-номер.</p>
+          </details>
+          <details class="faq__item">
+            <summary><span data-i18n="faq2_q">Как оплатить заказ?</span><span class="faq__chevron">▾</span></summary>
+            <p data-i18n="faq2_a">Apple Pay или банковская карта (Visa / Mastercard). Сейчас магазин работает в тестовом режиме — оплата не списывается.</p>
+          </details>
+          <details class="faq__item">
+            <summary><span data-i18n="faq3_q">Самокат придёт собранным?</span><span class="faq__chevron">▾</span></summary>
+            <p data-i18n="faq3_a">Комплиты приходят почти собранными: обычно нужно только поставить и затянуть руль. Инструменты — обычный шестигранник.</p>
+          </details>
+          <details class="faq__item">
+            <summary><span data-i18n="faq4_q">Как выбрать размер деки или руля?</span><span class="faq__chevron">▾</span></summary>
+            <p data-i18n="faq4_a">В описании каждого товара указаны размеры. Если сомневаетесь — напишите в поддержку, подберём под ваш рост и стиль катания.</p>
+          </details>
+          <details class="faq__item">
+            <summary><span data-i18n="faq5_q">Что делать, если товар не подошёл?</span><span class="faq__chevron">▾</span></summary>
+            <p data-i18n="faq5_a">Напишите нам в течение 14 дней после получения — обсудим обмен или возврат. Товар должен быть без следов катания.</p>
+          </details>
         </div>
       </div>
     </section>
@@ -144,9 +217,39 @@
   </main>
 
   <footer class="footer">
-    <div class="container footer__inner">
-      <span>© <span id="year"></span> <span data-i18n="footer_brand">PRO SCOOTER SHOP — трюковые самокаты и запчасти</span></span>
-      <a href="#top" data-i18n="to_top">Наверх ↑</a>
+    <div class="container">
+      <div class="footer__grid">
+        <div class="footer__col footer__col--brand">
+          <span class="logo"><span class="logo__icon">🛴</span><span class="logo__text">PRO<em>SCOOTER</em></span></span>
+          <p class="footer__tagline" data-i18n="footer_tagline">Магазин трюковых самокатов и запчастей. Катайся на том, что не подведёт.</p>
+        </div>
+        <div class="footer__col">
+          <h4 data-i18n="footer_nav">Разделы</h4>
+          <a href="#catalog" data-i18n="nav_catalog">Каталог</a>
+          <a href="#how" data-i18n="nav_how">Как купить</a>
+          <a href="#faq" data-i18n="faq_title">Частые вопросы</a>
+          <a href="#contacts" data-i18n="nav_contacts">Контакты</a>
+        </div>
+        <div class="footer__col">
+          <h4 data-i18n="footer_social">Мы на связи</h4>
+          <a href="https://t.me/proscooter" target="_blank" rel="noopener">Telegram</a>
+          <a href="https://wa.me/79000000000" target="_blank" rel="noopener">WhatsApp</a>
+          <a href="https://www.tiktok.com/@proscooter" target="_blank" rel="noopener">TikTok</a>
+          <a href="https://www.instagram.com/proscooter" target="_blank" rel="noopener">Instagram</a>
+        </div>
+        <div class="footer__col">
+          <h4 data-i18n="footer_pay">Оплата</h4>
+          <div class="pay-badges">
+            <span class="pay-badge">Apple Pay</span>
+            <span class="pay-badge">VISA</span>
+            <span class="pay-badge">Mastercard</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer__inner">
+        <span>© <span id="year"></span> <span data-i18n="footer_brand">PRO SCOOTER SHOP — трюковые самокаты и запчасти</span></span>
+        <a href="#top" data-i18n="to_top">Наверх ↑</a>
+      </div>
     </div>
   </footer>
 
@@ -157,6 +260,7 @@
         <button class="modal__arrow modal__arrow--prev" id="modal-prev" aria-label="Предыдущее фото">‹</button>
         <img class="modal__img" id="modal-img" alt="">
         <button class="modal__arrow modal__arrow--next" id="modal-next" aria-label="Следующее фото">›</button>
+        <span class="modal__counter" id="modal-counter" hidden></span>
         <div class="modal__thumbs" id="modal-thumbs"></div>
       </div>
       <div class="modal__info">
@@ -176,6 +280,10 @@
           <button type="button" class="btn btn--ghost" id="modal-cart" data-i18n="add_cart">В корзину</button>
         </div>
         <button type="button" class="btn btn--ghost modal__support" id="modal-support" data-i18n="support_btn">Связаться с поддержкой</button>
+      </div>
+      <div class="modal__related" id="modal-related" hidden>
+        <h4 class="modal__related-title" data-i18n="related_title">Похожие товары</h4>
+        <div class="related-strip" id="related-strip"></div>
       </div>
     </div>
     <div class="lightbox" id="lightbox" hidden>

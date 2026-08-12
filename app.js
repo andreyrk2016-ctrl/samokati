@@ -25,11 +25,30 @@
   var modalDesc = document.getElementById("modal-desc");
   var modalBuy = document.getElementById("modal-buy");
 
-  var state = { category: "all", query: "" };
+  var state = { category: "all", query: "", sort: "default" };
   var modalState = { product: null, index: 0 };
 
   document.getElementById("year").textContent = new Date().getFullYear();
   if (DATA.demo) demoNote.hidden = false;
+
+  /* Живые фото товаров в шапке — кликабельные */
+  (function renderHeroVisual() {
+    var wrap = document.getElementById("hero-visual");
+    if (!wrap) return;
+    var withPhoto = products.filter(function (p) { return p.images.length; });
+    var scooters = withPhoto.filter(function (p) { return p.category === "Самокаты"; });
+    var picks = (scooters.length >= 3 ? scooters : withPhoto).slice(0, 3);
+    if (!picks.length) return;
+    wrap.innerHTML = picks.map(function (p, i) {
+      return '<button type="button" class="hero-card hero-card--' + (i + 1) +
+        '" data-id="' + p.id + '" tabindex="-1">' +
+        '<img src="' + p.images[0] + '" alt="" loading="lazy"></button>';
+    }).join("");
+    wrap.addEventListener("click", function (event) {
+      var card = event.target.closest(".hero-card");
+      if (card) openModal(Number(card.dataset.id));
+    });
+  })();
 
   /* ---------- Языки ---------- */
 
@@ -126,6 +145,35 @@
     return count + "";
   }
 
+  /* ---------- Всплывающие уведомления ---------- */
+
+  var toastWrap = document.createElement("div");
+  toastWrap.className = "toasts";
+  toastWrap.setAttribute("aria-live", "polite");
+  document.body.appendChild(toastWrap);
+
+  function toast(icon, key) {
+    var el = document.createElement("div");
+    el.className = "toast";
+    el.textContent = icon + " " + t(key);
+    toastWrap.appendChild(el);
+    // держим не больше трёх штук
+    while (toastWrap.children.length > 3) toastWrap.removeChild(toastWrap.firstChild);
+    requestAnimationFrame(function () { el.classList.add("is-in"); });
+    setTimeout(function () {
+      el.classList.remove("is-in");
+      setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 350);
+    }, 2200);
+  }
+
+  function bumpCartBadge() {
+    var badge = document.getElementById("cart-badge");
+    if (!badge) return;
+    badge.classList.remove("is-bump");
+    void badge.offsetWidth; // перезапуск анимации
+    badge.classList.add("is-bump");
+  }
+
   /* ---------- Категории ---------- */
 
   function getCategories() {
@@ -166,6 +214,24 @@
     state.query = searchInput.value.trim().toLowerCase();
     renderGrid();
   });
+
+  var sortSelect = document.getElementById("sort");
+  sortSelect.addEventListener("change", function () {
+    state.sort = sortSelect.value;
+    renderGrid();
+  });
+
+  /* Товары без цены при сортировке по цене уходят в конец */
+  function sortProducts(list) {
+    if (state.sort === "default") return list;
+    var dir = state.sort === "cheap" ? 1 : -1;
+    return list.slice().sort(function (a, b) {
+      var pa = typeof a.price === "number" ? a.price : Infinity * dir;
+      var pb = typeof b.price === "number" ? b.price : Infinity * dir;
+      if (pa === pb) return 0;
+      return pa < pb ? -dir : dir;
+    });
+  }
 
   /* ---------- Сетка товаров ---------- */
 
@@ -232,7 +298,7 @@
   }
 
   function renderGrid() {
-    var visible = getVisibleProducts();
+    var visible = sortProducts(getVisibleProducts());
     grid.innerHTML = visible.map(cardHtml).join("");
     emptyEl.hidden = visible.length > 0;
     if (!visible.length) {
@@ -249,6 +315,7 @@
       var nowFav = AUTH.toggleFav(favBtn.dataset.fav);
       favBtn.classList.toggle("is-fav", nowFav);
       favBtn.textContent = nowFav ? "♥" : "♡";
+      toast(nowFav ? "♥" : "♡", nowFav ? "toast_fav_on" : "toast_fav_off");
       renderChips();
       if (state.category === "__fav") renderGrid();
       if (typeof renderAuthState === "function") renderAuthState();
@@ -261,6 +328,7 @@
         cartAdd(cartProduct.name, null);
         cartAddBtn.textContent = "✓";
         setTimeout(function () { cartAddBtn.textContent = "🛒"; }, 800);
+        toast("🛒", "toast_cart");
       }
       return;
     }
@@ -299,7 +367,39 @@
     modalDesc.textContent = trDesc(product);
     modalBuy.textContent = t("buy_now") || "Купить сейчас";
     updateModalFav(product);
+    renderRelated(product);
   }
+
+  /* ---------- Похожие товары ---------- */
+
+  var modalRelated = document.getElementById("modal-related");
+  var relatedStrip = document.getElementById("related-strip");
+
+  function renderRelated(product) {
+    var rel = products.filter(function (p) {
+      return p.category === product.category && p.id !== product.id;
+    }).slice(0, 4);
+    modalRelated.hidden = !rel.length;
+    relatedStrip.innerHTML = rel.map(function (p) {
+      var img = p.images.length
+        ? '<img src="' + p.images[0] + '" alt="" loading="lazy">'
+        : "🛴";
+      return '<button type="button" class="related-card" data-id="' + p.id + '">' +
+        '<span class="related-card__photo">' + img + "</span>" +
+        '<span class="related-card__name">' + escapeHtml(trName(p)) + "</span>" +
+        '<span class="related-card__price">' + escapeHtml(formatPrice(p.price) || t("price_ask")) + "</span>" +
+        "</button>";
+    }).join("");
+  }
+
+  relatedStrip.addEventListener("click", function (event) {
+    var card = event.target.closest(".related-card");
+    if (!card) return;
+    openModal(Number(card.dataset.id));
+    modal.scrollTop = 0;
+    var body = modal.querySelector(".modal__body");
+    if (body) body.scrollTop = 0;
+  });
 
   function openModal(id) {
     var product = products.find(function (item) { return item.id === id; });
@@ -329,20 +429,27 @@
     }).join("");
   }
 
+  var modalCounter = document.getElementById("modal-counter");
+
   function showImage(index) {
     var product = modalState.product;
     if (!product) return;
     var total = product.images.length;
     if (!total) {
       modalImg.removeAttribute("src");
+      modalCounter.hidden = true;
       return;
     }
     modalState.index = (index + total) % total;
     modalImg.src = product.images[modalState.index];
     modalImg.alt = trName(product);
+    modalCounter.hidden = total < 2;
+    modalCounter.textContent = (modalState.index + 1) + " / " + total;
     modalThumbs.querySelectorAll(".modal__thumb").forEach(function (thumb) {
       thumb.classList.toggle("is-active", Number(thumb.dataset.index) === modalState.index);
     });
+    // если открыт полноэкранный просмотр — листаем и его
+    if (!lightbox.hidden) lightboxImg.src = modalImg.src;
   }
 
   modalThumbs.addEventListener("click", function (event) {
@@ -366,7 +473,11 @@
     if (event.target === modal) modal.close(); // клик по фону закрывает окно
   });
 
-  modal.addEventListener("keydown", function (event) {
+  // Стрелки работают, где бы ни был фокус (например, после клика по «похожему»)
+  document.addEventListener("keydown", function (event) {
+    if (!modal.open) return;
+    var tag = (event.target.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea") return;
     if (event.key === "ArrowLeft") showImage(modalState.index - 1);
     if (event.key === "ArrowRight") showImage(modalState.index + 1);
   });
@@ -387,6 +498,14 @@
 
   modal.addEventListener("close", function () {
     lightbox.hidden = true;
+  });
+
+  // Esc при открытом полноэкранном фото закрывает только фото, а не всё окно
+  modal.addEventListener("cancel", function (event) {
+    if (!lightbox.hidden) {
+      event.preventDefault();
+      lightbox.hidden = true;
+    }
   });
 
   /* ---------- Выбор цвета ---------- */
@@ -551,6 +670,7 @@
     if (existing) existing.qty += 1;
     else cartData.push({ name: name, color: color || null, qty: 1 });
     saveCart();
+    bumpCartBadge();
   }
 
   function cartLineTotal(item) {
@@ -737,7 +857,8 @@
 
   document.getElementById("modal-fav").addEventListener("click", function () {
     if (!modalState.product) return;
-    AUTH.toggleFav(modalState.product.name);
+    var nowFav = AUTH.toggleFav(modalState.product.name);
+    toast(nowFav ? "♥" : "♡", nowFav ? "toast_fav_on" : "toast_fav_off");
     updateModalFav(modalState.product);
     renderChips();
     renderGrid();
@@ -747,6 +868,7 @@
   document.getElementById("modal-cart").addEventListener("click", function () {
     if (!modalState.product) return;
     cartAdd(modalState.product.name, modalState.color);
+    toast("🛒", "toast_cart");
     var btn = document.getElementById("modal-cart");
     btn.textContent = "✓";
     setTimeout(function () { btn.textContent = t("add_cart"); }, 800);
@@ -811,6 +933,17 @@
     if (typeof resetLogoutBtn === "function") resetLogoutBtn();
   }
 
+  var DATE_LOCALES = { ru: "ru-RU", en: "en-US", es: "es-ES" };
+
+  function orderDate(ts) {
+    if (!ts) return "";
+    try {
+      return new Date(ts).toLocaleDateString(DATE_LOCALES[lang] || "ru-RU", {
+        day: "numeric", month: "long", year: "numeric"
+      });
+    } catch (e) { return ""; }
+  }
+
   function renderOrders() {
     var orders = loadOrders();
     ordersListEl.innerHTML = orders.slice().reverse().map(function (order) {
@@ -819,9 +952,11 @@
         return (product ? trName(product) : item.name) +
           (item.color ? " (" + trColor(item.color) + ")" : "") + " ×" + item.qty;
       }).join(", ");
+      var dateStr = orderDate(order.ts);
       return '<div class="order-row">' +
         '<div class="order-row__head"><strong>' + escapeHtml(t("order_label")) + " №" + order.num +
         '</strong><span class="checkout-price">$' + order.total.toLocaleString("en-US") + "</span></div>" +
+        (dateStr ? '<div class="order-row__date">' + escapeHtml(dateStr) + "</div>" : "") +
         '<div class="order-row__items">' + escapeHtml(lines) + "</div>" +
         '<div class="order-row__status">' + escapeHtml(t("order_status")) + "</div></div>";
     }).join("");
@@ -1091,7 +1226,7 @@
 
   function observeReveals() {
     if (!revealObserver) return;
-    document.querySelectorAll(".card, .how__step, .contact-card").forEach(function (el, i) {
+    document.querySelectorAll(".card, .how__step, .contact-card, .perk, .faq__item").forEach(function (el, i) {
       if (el.classList.contains("reveal")) return;
       el.classList.add("reveal");
       el.style.transitionDelay = (i % 4) * 60 + "ms";
