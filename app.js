@@ -213,10 +213,8 @@
       ? '<span class="card__price">' + escapeHtml(price) + "</span>"
       : '<span class="card__price--empty">' + escapeHtml(t("price_ask") || "Цена по запросу") + "</span>";
 
-    var buyHtml = product.link
-      ? '<a class="card__buy" href="' + escapeHtml(product.link) + '" target="_blank" rel="noopener">' +
-        escapeHtml(t("buy") || "Купить") + "</a>"
-      : "";
+    var buyHtml = '<button type="button" class="card__buy" data-buy="' + product.id + '">' +
+      escapeHtml(t("buy") || "Купить") + "</button>";
 
     return (
       '<article class="card" data-id="' + product.id + '" tabindex="0" role="button" ' +
@@ -253,7 +251,12 @@
       if (typeof renderAuthState === "function") renderAuthState();
       return;
     }
-    if (event.target.closest("a")) return; // кнопка «Купить» работает сама
+    var buyBtn = event.target.closest(".card__buy");
+    if (buyBtn) {
+      var buyProduct = products.find(function (item) { return item.id === Number(buyBtn.dataset.buy); });
+      if (buyProduct) openCheckout(buyProduct, null);
+      return;
+    }
     var card = event.target.closest(".card");
     if (card) openModal(Number(card.dataset.id));
   });
@@ -285,14 +288,8 @@
 
     fillModalTexts(product);
     renderVariants(product);
-
-    if (product.link) {
-      modalBuy.hidden = false;
-      modalBuy.href = product.link;
-    } else {
-      modalBuy.hidden = true;
-      modalBuy.removeAttribute("href");
-    }
+    modalBuy.hidden = false;
+    modalBuy.removeAttribute("href");
 
     renderGalleryThumbs();
     showImage(0);
@@ -483,6 +480,57 @@
     }, 450);
   });
 
+  /* ---------- Окно оплаты ---------- */
+
+  var checkoutModal = document.getElementById("checkout-modal");
+  var checkoutMain = document.getElementById("checkout-main");
+  var checkoutSoon = document.getElementById("checkout-soon");
+  var checkoutName = document.getElementById("checkout-name");
+  var checkoutPriceEl = document.getElementById("checkout-price");
+  var checkoutProduct = null;
+  var checkoutColor = null;
+
+  function openCheckout(product, color) {
+    checkoutProduct = product;
+    checkoutColor = color;
+    checkoutMain.hidden = false;
+    checkoutSoon.hidden = true;
+    checkoutName.textContent = trName(product) + (color ? " · " + trColor(color) : "");
+    checkoutPriceEl.textContent = formatPrice(product.price) || t("price_ask");
+    if (modal.open) modal.close();
+    checkoutModal.showModal();
+  }
+
+  checkoutMain.addEventListener("click", function (event) {
+    if (!event.target.closest(".pay-option")) return;
+    checkoutMain.hidden = true;
+    checkoutSoon.hidden = false;
+  });
+
+  document.getElementById("checkout-close").addEventListener("click", function () {
+    checkoutModal.close();
+  });
+
+  checkoutModal.addEventListener("click", function (event) {
+    if (event.target === checkoutModal) checkoutModal.close();
+  });
+
+  document.getElementById("checkout-support").addEventListener("click", function () {
+    var prefill = "";
+    if (checkoutProduct) {
+      prefill = t("pay_order_prefix") + trName(checkoutProduct) +
+        (checkoutColor ? " (" + trColor(checkoutColor) + ")" : "") +
+        ", " + (formatPrice(checkoutProduct.price) || "") + " — ";
+    }
+    checkoutModal.close();
+    openSupport(prefill);
+  });
+
+  modalBuy.addEventListener("click", function (event) {
+    event.preventDefault();
+    if (modalState.product) openCheckout(modalState.product, modalState.color);
+  });
+
   modalSupport.addEventListener("click", function () {
     var product = modalState.product;
     var prefill = product
@@ -648,23 +696,6 @@
     }
     requestAnimationFrame(tick);
   });
-
-  // 3D-наклон карточек за курсором
-  if (motionOk && finePointer) {
-    grid.addEventListener("mousemove", function (event) {
-      var card = event.target.closest(".card");
-      if (!card) return;
-      var rect = card.getBoundingClientRect();
-      var x = (event.clientX - rect.left) / rect.width - 0.5;
-      var y = (event.clientY - rect.top) / rect.height - 0.5;
-      card.style.transform = "translateY(-5px) rotateX(" + (-y * 5).toFixed(2) +
-        "deg) rotateY(" + (x * 5).toFixed(2) + "deg)";
-    });
-    grid.addEventListener("mouseout", function (event) {
-      var card = event.target.closest(".card");
-      if (card && !card.contains(event.relatedTarget)) card.style.transform = "";
-    });
-  }
 
   // Живой глоу в хиро за курсором
   var hero = document.querySelector(".hero");
