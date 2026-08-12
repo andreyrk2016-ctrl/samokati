@@ -1071,21 +1071,52 @@
   var ordersCountEl = document.getElementById("orders-count");
   var profileLabel = document.getElementById("profile-label");
   var profileAvatar = document.getElementById("profile-avatar");
+  var profileAvatarInner = document.getElementById("profile-avatar-inner");
   var profileEmail = document.getElementById("profile-email");
+  var avatarPicker = document.getElementById("avatar-picker");
+
+  /* ---------- Аватар: буква по умолчанию, можно выбрать эмодзи или фото ---------- */
+
+  var AVATAR_EMOJIS = ["🛴", "🔥", "😎", "🤙", "⚡", "💀", "🐺", "👽", "🎯", "🚀"];
+
+  function avatarKey() {
+    var user = window.AUTH ? AUTH.user : null;
+    return user ? "psshop-avatar-" + user.email : null;
+  }
+
+  function loadAvatarData() {
+    var key = avatarKey();
+    return key ? storeRead(key, null) : null;
+  }
+
+  function saveAvatarData(data) {
+    var key = avatarKey();
+    if (!key) return;
+    if (data) storeWrite(key, data);
+    else { try { localStorage.removeItem(key); } catch (e) {} }
+  }
+
+  function avatarInnerHtml(user) {
+    var data = loadAvatarData();
+    if (data && data.type === "img") return '<img src="' + data.value + '" alt="">';
+    if (data && data.type === "emoji") return '<span class="auth-avatar__emoji">' + data.value + "</span>";
+    return escapeHtml((user.name || user.email || "?").charAt(0).toUpperCase());
+  }
 
   function renderAuthState() {
     var user = window.AUTH ? AUTH.user : null;
     profileBtn.classList.toggle("is-logged", !!user);
-    profileIcon.textContent = user ? (user.name || user.email || "?").charAt(0).toUpperCase() : "👤";
+    profileIcon.innerHTML = user ? avatarInnerHtml(user) : "👤";
     profileLabel.textContent = user ? (user.name || user.email).split("@")[0].slice(0, 12) : t("auth_login");
     // Если гость сейчас вводит код из письма — не сбрасываем эту панель
     var keepCode = !user && !authCode.hidden;
     authForms.hidden = !!user || keepCode;
     authProfile.hidden = !user;
     authCode.hidden = !keepCode;
+    avatarPicker.hidden = true;
     if (user) {
       profileHello.textContent = t("auth_hello") + ", " + (user.name || user.email).split("@")[0] + "!";
-      profileAvatar.textContent = (user.name || user.email || "?").charAt(0).toUpperCase();
+      profileAvatarInner.innerHTML = avatarInnerHtml(user);
       profileEmail.textContent = user.email || "";
     }
     favsCountEl.textContent = window.AUTH ? AUTH.favs().length : 0;
@@ -1093,6 +1124,62 @@
     authLocalNote.hidden = !(window.AUTH && AUTH.mode === "local");
     if (typeof resetLogoutBtn === "function") resetLogoutBtn();
   }
+
+  document.getElementById("avatar-emojis").innerHTML = AVATAR_EMOJIS.map(function (emoji) {
+    return '<button type="button" data-emoji="' + emoji + '">' + emoji + "</button>";
+  }).join("");
+
+  profileAvatar.addEventListener("click", function () {
+    avatarPicker.hidden = !avatarPicker.hidden;
+  });
+
+  document.getElementById("avatar-emojis").addEventListener("click", function (event) {
+    var btn = event.target.closest("button[data-emoji]");
+    if (!btn) return;
+    saveAvatarData({ type: "emoji", value: btn.dataset.emoji });
+    avatarPicker.hidden = true;
+    renderAuthState();
+    toast(btn.dataset.emoji, "toast_ava");
+  });
+
+  document.getElementById("avatar-upload").addEventListener("click", function () {
+    document.getElementById("avatar-file").click();
+  });
+
+  document.getElementById("avatar-reset").addEventListener("click", function () {
+    saveAvatarData(null);
+    avatarPicker.hidden = true;
+    renderAuthState();
+  });
+
+  // Фото ужимаем до квадрата 128×128, чтобы поместилось в хранилище браузера
+  document.getElementById("avatar-file").addEventListener("change", function () {
+    var file = this.files && this.files[0];
+    this.value = "";
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      var img = new Image();
+      img.onload = function () {
+        var size = 128;
+        var canvas = document.createElement("canvas");
+        canvas.width = size;
+        canvas.height = size;
+        var side = Math.min(img.width, img.height);
+        canvas.getContext("2d").drawImage(
+          img,
+          (img.width - side) / 2, (img.height - side) / 2, side, side,
+          0, 0, size, size
+        );
+        saveAvatarData({ type: "img", value: canvas.toDataURL("image/jpeg", 0.85) });
+        avatarPicker.hidden = true;
+        renderAuthState();
+        toast("🖼", "toast_ava");
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
 
   var DATE_LOCALES = { ru: "ru-RU", en: "en-US", es: "es-ES" };
 

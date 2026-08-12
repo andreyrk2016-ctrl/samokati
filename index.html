@@ -452,7 +452,18 @@
 
       <div id="auth-profile" hidden>
         <div class="auth-head">
-          <span class="auth-avatar" id="profile-avatar">?</span>
+          <button type="button" class="auth-avatar" id="profile-avatar" aria-label="Сменить аватар">
+            <span class="auth-avatar__inner" id="profile-avatar-inner">?</span>
+            <span class="auth-avatar__edit">✏️</span>
+          </button>
+          <div class="avatar-picker" id="avatar-picker" hidden>
+            <div class="avatar-picker__grid" id="avatar-emojis"></div>
+            <div class="auth-actions">
+              <button type="button" class="btn btn--ghost" id="avatar-upload" data-i18n="ava_upload">Загрузить фото</button>
+              <button type="button" class="btn btn--ghost" id="avatar-reset" data-i18n="ava_reset">Убрать</button>
+            </div>
+            <input type="file" id="avatar-file" accept="image/*" hidden>
+          </div>
           <h3 class="auth-title" id="profile-hello"></h3>
           <p class="auth-note auth-note--center" id="profile-email"></p>
         </div>
