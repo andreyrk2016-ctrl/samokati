@@ -26,6 +26,7 @@
       </nav>
       <div class="topbar__right">
         <div class="lang-switch" id="lang-switch" role="group" aria-label="Язык"></div>
+        <button class="cart-btn" id="cart-btn" aria-label="Корзина">🛒<span class="cart-badge" id="cart-badge" hidden>0</span></button>
         <button class="profile-btn" id="profile-btn" aria-label="Профиль">
           <span id="profile-icon">👤</span>
           <span id="profile-label" data-i18n="auth_login">Войти</span>
@@ -170,7 +171,10 @@
           <div class="variant-chips" id="variant-chips"></div>
         </div>
         <p class="modal__desc" id="modal-desc"></p>
-        <a class="btn btn--accent modal__buy" id="modal-buy" target="_blank" rel="noopener" data-i18n="buy_more">Купить / Подробнее</a>
+        <div class="modal__buy-row">
+          <a class="btn btn--accent modal__buy" id="modal-buy" data-i18n="buy_now">Купить сейчас</a>
+          <button type="button" class="btn btn--ghost" id="modal-cart" data-i18n="add_cart">В корзину</button>
+        </div>
         <button type="button" class="btn btn--ghost modal__support" id="modal-support" data-i18n="support_btn">Связаться с поддержкой</button>
       </div>
     </div>
@@ -184,9 +188,10 @@
       <button class="modal__close" id="checkout-close" aria-label="Закрыть">✕</button>
       <div id="checkout-main">
         <h3 class="auth-title" data-i18n="pay_title">Оплата</h3>
-        <div class="checkout-item">
-          <span id="checkout-name"></span>
-          <span class="checkout-price" id="checkout-price"></span>
+        <div id="checkout-items"></div>
+        <div class="cart-total">
+          <span data-i18n="cart_total">Итого:</span>
+          <span class="checkout-price" id="checkout-total"></span>
         </div>
         <div class="pay-options">
           <button type="button" class="pay-option pay-option--apple" data-pay="applepay">
@@ -200,12 +205,29 @@
           </button>
         </div>
       </div>
-      <div id="checkout-soon" hidden>
-        <h3 class="auth-title">🛠</h3>
-        <p class="checkout-soon-text" data-i18n="pay_soon">Онлайн-оплата уже подключается! А пока оформим ваш заказ вручную — напишите в поддержку, это займёт минуту.</p>
+      <div id="checkout-success" hidden>
+        <h3 class="auth-title">✅ <span data-i18n="pay_success_title">Заказ оформлен!</span></h3>
+        <p class="checkout-soon-text" data-i18n="pay_success_text">Тестовый режим — деньги не списаны. Статус заказа смотрите в профиле, в разделе «Мои заказы».</p>
         <div class="auth-actions auth-actions--column">
-          <button type="button" class="btn btn--accent" id="checkout-support" data-i18n="pay_support">Написать в поддержку</button>
+          <button type="button" class="btn btn--accent" id="checkout-orders" data-i18n="my_orders">Мои заказы</button>
+          <button type="button" class="btn btn--ghost" id="checkout-support" data-i18n="pay_support">Написать в поддержку</button>
         </div>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="modal cart-modal" id="cart-modal">
+    <div class="auth-box">
+      <button class="modal__close" id="cart-close" aria-label="Закрыть">✕</button>
+      <h3 class="auth-title" data-i18n="cart_title">Корзина</h3>
+      <div id="cart-items"></div>
+      <p class="auth-note" id="cart-empty" data-i18n="cart_empty">Корзина пуста — добавьте что-нибудь кнопкой «В корзину».</p>
+      <div class="cart-total" id="cart-total-row" hidden>
+        <span data-i18n="cart_total">Итого:</span>
+        <span class="checkout-price" id="cart-total"></span>
+      </div>
+      <div class="auth-actions auth-actions--column">
+        <button type="button" class="btn btn--accent" id="cart-checkout" data-i18n="cart_checkout" hidden>Оформить заказ</button>
       </div>
     </div>
   </dialog>
@@ -240,7 +262,19 @@
           <button type="button" class="btn btn--accent" id="profile-favs">
             ♥ <span data-i18n="my_items">Мои товары</span> (<span id="favs-count">0</span>)
           </button>
+          <button type="button" class="btn btn--accent" id="profile-orders">
+            📦 <span data-i18n="my_orders">Мои заказы</span> (<span id="orders-count">0</span>)
+          </button>
           <button type="button" class="btn btn--ghost" id="profile-logout" data-i18n="auth_logout">Выйти</button>
+        </div>
+      </div>
+
+      <div id="auth-orders" hidden>
+        <h3 class="auth-title" data-i18n="my_orders">Мои заказы</h3>
+        <div id="orders-list"></div>
+        <p class="auth-note" id="orders-empty" data-i18n="orders_empty">Заказов пока нет.</p>
+        <div class="auth-actions auth-actions--column">
+          <button type="button" class="btn btn--ghost" id="orders-back" data-i18n="back">← Назад</button>
         </div>
       </div>
     </div>

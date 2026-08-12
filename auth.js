@@ -119,6 +119,8 @@
     },
     register: function (email, password, name) {
       return fb.auth.createUserWithEmailAndPassword(email, password).then(function (cred) {
+        // Письмо для подтверждения, что почта настоящая
+        cred.user.sendEmailVerification().catch(function () {});
         if (name) return cred.user.updateProfile({ displayName: name });
       });
     },

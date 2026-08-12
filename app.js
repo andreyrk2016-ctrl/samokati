@@ -213,8 +213,10 @@
       ? '<span class="card__price">' + escapeHtml(price) + "</span>"
       : '<span class="card__price--empty">' + escapeHtml(t("price_ask") || "Цена по запросу") + "</span>";
 
-    var buyHtml = '<button type="button" class="card__buy" data-buy="' + product.id + '">' +
-      escapeHtml(t("buy") || "Купить") + "</button>";
+    var buyHtml = '<div class="card__actions">' +
+      '<button type="button" class="card__cart" data-cart="' + product.id + '" aria-label="В корзину">🛒</button>' +
+      '<button type="button" class="card__buy" data-buy="' + product.id + '">' +
+      escapeHtml(t("buy") || "Купить") + "</button></div>";
 
     return (
       '<article class="card" data-id="' + product.id + '" tabindex="0" role="button" ' +
@@ -251,10 +253,20 @@
       if (typeof renderAuthState === "function") renderAuthState();
       return;
     }
+    var cartAddBtn = event.target.closest(".card__cart");
+    if (cartAddBtn) {
+      var cartProduct = products.find(function (item) { return item.id === Number(cartAddBtn.dataset.cart); });
+      if (cartProduct) {
+        cartAdd(cartProduct.name, null);
+        cartAddBtn.textContent = "✓";
+        setTimeout(function () { cartAddBtn.textContent = "🛒"; }, 800);
+      }
+      return;
+    }
     var buyBtn = event.target.closest(".card__buy");
     if (buyBtn) {
       var buyProduct = products.find(function (item) { return item.id === Number(buyBtn.dataset.buy); });
-      if (buyProduct) openCheckout(buyProduct, null);
+      if (buyProduct) openCheckout([{ name: buyProduct.name, color: null, qty: 1 }], false);
       return;
     }
     var card = event.target.closest(".card");
@@ -480,31 +492,179 @@
     }, 450);
   });
 
+  /* ---------- Корзина ---------- */
+
+  function storeRead(key, fallback) {
+    try { return JSON.parse(localStorage.getItem(key)) || fallback; } catch (e) { return fallback; }
+  }
+
+  function storeWrite(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) {}
+  }
+
+  var cartData = storeRead("psshop-cart", []);
+  var cartBtn = document.getElementById("cart-btn");
+  var cartBadge = document.getElementById("cart-badge");
+  var cartModal = document.getElementById("cart-modal");
+  var cartItemsEl = document.getElementById("cart-items");
+  var cartEmptyEl = document.getElementById("cart-empty");
+  var cartTotalRow = document.getElementById("cart-total-row");
+  var cartTotalEl = document.getElementById("cart-total");
+  var cartCheckoutBtn = document.getElementById("cart-checkout");
+
+  function productByName(name) {
+    return products.find(function (p) { return p.name === name; });
+  }
+
+  function updateCartBadge() {
+    var count = cartData.reduce(function (sum, item) { return sum + item.qty; }, 0);
+    cartBadge.textContent = count;
+    cartBadge.hidden = count === 0;
+  }
+
+  function saveCart() {
+    storeWrite("psshop-cart", cartData);
+    updateCartBadge();
+  }
+
+  function cartAdd(name, color) {
+    var existing = cartData.find(function (item) {
+      return item.name === name && item.color === (color || null);
+    });
+    if (existing) existing.qty += 1;
+    else cartData.push({ name: name, color: color || null, qty: 1 });
+    saveCart();
+  }
+
+  function cartLineTotal(item) {
+    var product = productByName(item.name);
+    return product && typeof product.price === "number" ? product.price * item.qty : 0;
+  }
+
+  function renderCart() {
+    var html = cartData.map(function (item, index) {
+      var product = productByName(item.name);
+      if (!product) return "";
+      var img = product.images.length ? '<img src="' + product.images[0] + '" alt="">' : "";
+      return '<div class="cart-row">' + img +
+        '<div class="cart-row__info"><strong>' + escapeHtml(trName(product)) + "</strong>" +
+        (item.color ? '<span class="cart-row__color">' + escapeHtml(trColor(item.color)) + "</span>" : "") +
+        '<span class="cart-row__price">' + escapeHtml(formatPrice(product.price) || "") + "</span></div>" +
+        '<div class="cart-row__qty">' +
+        '<button type="button" data-act="dec" data-i="' + index + '">−</button>' +
+        "<span>" + item.qty + "</span>" +
+        '<button type="button" data-act="inc" data-i="' + index + '">+</button>' +
+        '<button type="button" class="cart-row__del" data-act="del" data-i="' + index + '">✕</button>' +
+        "</div></div>";
+    }).join("");
+    cartItemsEl.innerHTML = html;
+    var hasItems = cartData.length > 0;
+    cartEmptyEl.hidden = hasItems;
+    cartTotalRow.hidden = !hasItems;
+    cartCheckoutBtn.hidden = !hasItems;
+    var total = cartData.reduce(function (sum, item) { return sum + cartLineTotal(item); }, 0);
+    cartTotalEl.textContent = "$" + total.toLocaleString("en-US");
+  }
+
+  cartBtn.addEventListener("click", function () {
+    renderCart();
+    cartModal.showModal();
+  });
+
+  document.getElementById("cart-close").addEventListener("click", function () { cartModal.close(); });
+
+  cartModal.addEventListener("click", function (event) {
+    if (event.target === cartModal) cartModal.close();
+  });
+
+  cartItemsEl.addEventListener("click", function (event) {
+    var btn = event.target.closest("button[data-act]");
+    if (!btn) return;
+    var index = Number(btn.dataset.i);
+    if (btn.dataset.act === "inc") cartData[index].qty += 1;
+    if (btn.dataset.act === "dec") {
+      cartData[index].qty -= 1;
+      if (cartData[index].qty <= 0) cartData.splice(index, 1);
+    }
+    if (btn.dataset.act === "del") cartData.splice(index, 1);
+    saveCart();
+    renderCart();
+  });
+
+  cartCheckoutBtn.addEventListener("click", function () {
+    cartModal.close();
+    openCheckout(cartData.map(function (item) {
+      return { name: item.name, color: item.color, qty: item.qty };
+    }), true);
+  });
+
+  updateCartBadge();
+
+  /* ---------- Заказы ---------- */
+
+  function ordersKey() {
+    var user = window.AUTH ? AUTH.user : null;
+    return user ? "psshop-orders-" + user.email : "psshop-orders-guest";
+  }
+
+  function loadOrders() { return storeRead(ordersKey(), []); }
+
+  function ordersCount() { return loadOrders().length; }
+
   /* ---------- Окно оплаты ---------- */
 
   var checkoutModal = document.getElementById("checkout-modal");
   var checkoutMain = document.getElementById("checkout-main");
-  var checkoutSoon = document.getElementById("checkout-soon");
-  var checkoutName = document.getElementById("checkout-name");
-  var checkoutPriceEl = document.getElementById("checkout-price");
-  var checkoutProduct = null;
-  var checkoutColor = null;
+  var checkoutSuccess = document.getElementById("checkout-success");
+  var checkoutItemsEl = document.getElementById("checkout-items");
+  var checkoutTotalEl = document.getElementById("checkout-total");
+  var checkoutList = [];
+  var checkoutFromCart = false;
 
-  function openCheckout(product, color) {
-    checkoutProduct = product;
-    checkoutColor = color;
+  function openCheckout(items, fromCart) {
+    checkoutList = items;
+    checkoutFromCart = fromCart;
     checkoutMain.hidden = false;
-    checkoutSoon.hidden = true;
-    checkoutName.textContent = trName(product) + (color ? " · " + trColor(color) : "");
-    checkoutPriceEl.textContent = formatPrice(product.price) || t("price_ask");
+    checkoutSuccess.hidden = true;
+    checkoutItemsEl.innerHTML = items.map(function (item) {
+      var product = productByName(item.name);
+      if (!product) return "";
+      var img = product.images.length ? '<img src="' + product.images[0] + '" alt="">' : "";
+      return '<div class="checkout-item">' + img +
+        '<span class="checkout-item__name">' + escapeHtml(trName(product)) +
+        (item.color ? " · " + escapeHtml(trColor(item.color)) : "") +
+        (item.qty > 1 ? " × " + item.qty : "") + "</span>" +
+        '<span class="checkout-price">' + escapeHtml(formatPrice(product.price) || t("price_ask")) + "</span></div>";
+    }).join("");
+    var total = items.reduce(function (sum, item) {
+      var product = productByName(item.name);
+      return sum + (product && typeof product.price === "number" ? product.price * item.qty : 0);
+    }, 0);
+    checkoutTotalEl.textContent = "$" + total.toLocaleString("en-US");
     if (modal.open) modal.close();
     checkoutModal.showModal();
   }
 
   checkoutMain.addEventListener("click", function (event) {
     if (!event.target.closest(".pay-option")) return;
+    // Тестовый режим: оплата проходит бесплатно, заказ сохраняется.
+    var orders = loadOrders();
+    var total = 0;
+    var orderItems = checkoutList.map(function (item) {
+      var product = productByName(item.name);
+      var price = product && typeof product.price === "number" ? product.price : 0;
+      total += price * item.qty;
+      return { name: item.name, color: item.color, qty: item.qty, price: price };
+    });
+    orders.push({ num: orders.length + 1, items: orderItems, total: total, ts: Date.now() });
+    storeWrite(ordersKey(), orders);
+    if (checkoutFromCart) {
+      cartData = [];
+      saveCart();
+    }
+    if (typeof renderAuthState === "function") renderAuthState();
     checkoutMain.hidden = true;
-    checkoutSoon.hidden = false;
+    checkoutSuccess.hidden = false;
   });
 
   document.getElementById("checkout-close").addEventListener("click", function () {
@@ -515,20 +675,32 @@
     if (event.target === checkoutModal) checkoutModal.close();
   });
 
+  document.getElementById("checkout-orders").addEventListener("click", function () {
+    checkoutModal.close();
+    openOrdersPane();
+  });
+
   document.getElementById("checkout-support").addEventListener("click", function () {
-    var prefill = "";
-    if (checkoutProduct) {
-      prefill = t("pay_order_prefix") + trName(checkoutProduct) +
-        (checkoutColor ? " (" + trColor(checkoutColor) + ")" : "") +
-        ", " + (formatPrice(checkoutProduct.price) || "") + " — ";
-    }
+    var prefill = t("pay_order_prefix") + checkoutList.map(function (item) {
+      return trName(productByName(item.name) || { name: item.name }) +
+        (item.color ? " (" + trColor(item.color) + ")" : "") + " ×" + item.qty;
+    }).join(", ") + " — ";
     checkoutModal.close();
     openSupport(prefill);
   });
 
   modalBuy.addEventListener("click", function (event) {
     event.preventDefault();
-    if (modalState.product) openCheckout(modalState.product, modalState.color);
+    if (modalState.product) {
+      openCheckout([{ name: modalState.product.name, color: modalState.color, qty: 1 }], false);
+    }
+  });
+
+  document.getElementById("modal-cart").addEventListener("click", function (event) {
+    if (!modalState.product) return;
+    cartAdd(modalState.product.name, modalState.color);
+    event.target.textContent = "✓";
+    setTimeout(function () { applyStaticTexts(); }, 800);
   });
 
   modalSupport.addEventListener("click", function () {
@@ -559,24 +731,61 @@
   var favsCountEl = document.getElementById("favs-count");
   var authLocalNote = document.getElementById("auth-local-note");
 
+  var authOrders = document.getElementById("auth-orders");
+  var ordersListEl = document.getElementById("orders-list");
+  var ordersEmptyEl = document.getElementById("orders-empty");
+  var ordersCountEl = document.getElementById("orders-count");
+  var profileLabel = document.getElementById("profile-label");
+
   function renderAuthState() {
     var user = window.AUTH ? AUTH.user : null;
     profileBtn.classList.toggle("is-logged", !!user);
     profileIcon.textContent = user ? (user.name || user.email || "?").charAt(0).toUpperCase() : "👤";
+    profileLabel.textContent = user ? (user.name || user.email).split("@")[0].slice(0, 12) : t("auth_login");
     authForms.hidden = !!user;
     authProfile.hidden = !user;
+    authOrders.hidden = true;
     if (user) {
       profileHello.textContent = t("auth_hello") + ", " + (user.name || user.email) + "!";
     }
     favsCountEl.textContent = window.AUTH ? AUTH.favs().length : 0;
+    ordersCountEl.textContent = ordersCount();
     authLocalNote.hidden = !(window.AUTH && AUTH.mode === "local");
   }
+
+  function renderOrders() {
+    var orders = loadOrders();
+    ordersListEl.innerHTML = orders.slice().reverse().map(function (order) {
+      var lines = order.items.map(function (item) {
+        var product = productByName(item.name);
+        return (product ? trName(product) : item.name) +
+          (item.color ? " (" + trColor(item.color) + ")" : "") + " ×" + item.qty;
+      }).join(", ");
+      return '<div class="order-row">' +
+        '<div class="order-row__head"><strong>' + escapeHtml(t("order_label")) + " №" + order.num +
+        '</strong><span class="checkout-price">$' + order.total.toLocaleString("en-US") + "</span></div>" +
+        '<div class="order-row__items">' + escapeHtml(lines) + "</div>" +
+        '<div class="order-row__status">' + escapeHtml(t("order_status")) + "</div></div>";
+    }).join("");
+    ordersEmptyEl.hidden = orders.length > 0;
+  }
+
+  function openOrdersPane() {
+    renderOrders();
+    authForms.hidden = true;
+    authProfile.hidden = true;
+    authOrders.hidden = false;
+    if (!authModal.open) authModal.showModal();
+  }
+
+  var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
 
   function authFail(error) {
     var message = (error && error.message) || "";
     var key = "auth_err_creds";
     if (message === "exists" || /email-already/.test(message)) key = "auth_err_exists";
     else if (/weak-password/.test(message)) key = "auth_err_weak";
+    else if (/bad-email|invalid-email/.test(message)) key = "auth_err_email";
     authError.textContent = t(key);
     authError.hidden = false;
   }
@@ -609,9 +818,11 @@
   });
 
   authRegisterBtn.addEventListener("click", function () {
-    if (!authEmailEl.value.trim() || !authPassEl.value) return;
+    var email = authEmailEl.value.trim();
+    if (!email || !authPassEl.value) return;
+    if (!EMAIL_RE.test(email)) { authFail({ message: "bad-email" }); return; }
     if (authPassEl.value.length < 6) { authFail({ message: "weak-password" }); return; }
-    AUTH.register(authEmailEl.value.trim(), authPassEl.value, authNameEl.value.trim())
+    AUTH.register(email, authPassEl.value, authNameEl.value.trim())
       .then(authSuccess).catch(authFail);
   });
 
@@ -633,6 +844,12 @@
       renderChips();
       renderGrid();
     });
+  });
+
+  document.getElementById("profile-orders").addEventListener("click", openOrdersPane);
+
+  document.getElementById("orders-back").addEventListener("click", function () {
+    renderAuthState();
   });
 
   document.getElementById("profile-favs").addEventListener("click", function () {
