@@ -619,15 +619,39 @@
 
   function ordersCount() { return loadOrders().length; }
 
-  /* ---------- Окно оплаты ---------- */
+  /* ---------- Страница оплаты ---------- */
 
-  var checkoutModal = document.getElementById("checkout-modal");
+  var checkoutPage = document.getElementById("checkout-page");
   var checkoutMain = document.getElementById("checkout-main");
   var checkoutSuccess = document.getElementById("checkout-success");
   var checkoutItemsEl = document.getElementById("checkout-items");
   var checkoutTotalEl = document.getElementById("checkout-total");
   var checkoutList = [];
   var checkoutFromCart = false;
+
+  function showCheckoutPage() {
+    checkoutPage.hidden = false;
+    document.body.style.overflow = "hidden";
+    checkoutPage.scrollTop = 0;
+    if (location.hash !== "#checkout") {
+      try { history.pushState(null, "", "#checkout"); } catch (e) {}
+    }
+  }
+
+  function hideCheckoutPage() {
+    checkoutPage.hidden = true;
+    document.body.style.overflow = "";
+    if (location.hash === "#checkout") {
+      try { history.pushState(null, "", location.pathname + location.search); } catch (e) {}
+    }
+  }
+
+  window.addEventListener("popstate", function () {
+    if (location.hash !== "#checkout" && !checkoutPage.hidden) {
+      checkoutPage.hidden = true;
+      document.body.style.overflow = "";
+    }
+  });
 
   function openCheckout(items, fromCart) {
     checkoutList = items;
@@ -638,11 +662,15 @@
       var product = productByName(item.name);
       if (!product) return "";
       var img = product.images.length ? '<img src="' + product.images[0] + '" alt="">' : "";
-      return '<div class="checkout-item">' + img +
-        '<span class="checkout-item__name">' + escapeHtml(trName(product)) +
+      return '<div class="checkout-card">' +
+        '<div class="checkout-card__photo">' + img + "</div>" +
+        '<div class="checkout-card__body">' +
+        '<h3>' + escapeHtml(trName(product)) +
         (item.color ? " · " + escapeHtml(trColor(item.color)) : "") +
-        (item.qty > 1 ? " × " + item.qty : "") + "</span>" +
-        '<span class="checkout-price">' + escapeHtml(formatPrice(product.price) || t("price_ask")) + "</span></div>";
+        (item.qty > 1 ? " × " + item.qty : "") + "</h3>" +
+        '<span class="checkout-price">' + escapeHtml(formatPrice(product.price) || t("price_ask")) + "</span>" +
+        (trDesc(product) ? '<p class="checkout-card__desc">' + escapeHtml(trDesc(product)) + "</p>" : "") +
+        "</div></div>";
     }).join("");
     var total = items.reduce(function (sum, item) {
       var product = productByName(item.name);
@@ -650,7 +678,7 @@
     }, 0);
     checkoutTotalEl.textContent = "$" + total.toLocaleString("en-US");
     if (modal.open) modal.close();
-    checkoutModal.showModal();
+    showCheckoutPage();
   }
 
   checkoutMain.addEventListener("click", function (event) {
@@ -675,16 +703,10 @@
     checkoutSuccess.hidden = false;
   });
 
-  document.getElementById("checkout-close").addEventListener("click", function () {
-    checkoutModal.close();
-  });
-
-  checkoutModal.addEventListener("click", function (event) {
-    if (event.target === checkoutModal) checkoutModal.close();
-  });
+  document.getElementById("checkout-close").addEventListener("click", hideCheckoutPage);
 
   document.getElementById("checkout-orders").addEventListener("click", function () {
-    checkoutModal.close();
+    hideCheckoutPage();
     openOrdersPane();
   });
 
@@ -693,7 +715,7 @@
       return trName(productByName(item.name) || { name: item.name }) +
         (item.color ? " (" + trColor(item.color) + ")" : "") + " ×" + item.qty;
     }).join(", ") + " — ";
-    checkoutModal.close();
+    hideCheckoutPage();
     openSupport(prefill);
   });
 

@@ -330,9 +330,101 @@ a { color: inherit; text-decoration: none; }
 
 .modal__buy-row .btn { flex: 1; padding: 13px 10px; font-size: 13px; }
 
-/* ---------- Окно оплаты ---------- */
+/* ---------- Страница оплаты ---------- */
 
-.checkout-modal { max-width: 420px; }
+.checkout-page {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  background: var(--bg);
+  overflow-y: auto;
+}
+
+.checkout-page[hidden] { display: none; }
+
+.checkout-page__inner {
+  width: min(1000px, 100% - 40px);
+  margin: 0 auto;
+  padding: 28px 0 60px;
+}
+
+.checkout-page__back {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.checkout-page__back:hover { border-color: var(--accent); color: var(--accent); }
+
+.checkout-page__title { margin: 26px 0 22px; }
+
+.checkout-page__grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 22px;
+  align-items: start;
+}
+
+.checkout-aside {
+  position: sticky;
+  top: 20px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--panel);
+}
+
+.checkout-card {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--panel);
+  margin-bottom: 14px;
+}
+
+.checkout-card__photo {
+  width: 180px;
+  flex-shrink: 0;
+}
+
+.checkout-card__photo img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.checkout-card__body h3 {
+  font-size: 17px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.checkout-card__body .checkout-price { font-size: 18px; }
+
+.checkout-card__desc {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.checkout-success-actions { max-width: 420px; }
+
+@media (max-width: 760px) {
+  .checkout-page__grid { grid-template-columns: 1fr; }
+  .checkout-card { flex-direction: column; }
+  .checkout-card__photo { width: 100%; }
+}
 
 .checkout-item {
   display: flex;

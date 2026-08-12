@@ -179,38 +179,42 @@
     </div>
   </dialog>
 
-  <dialog class="modal checkout-modal" id="checkout-modal">
-    <div class="auth-box">
-      <button class="modal__close" id="checkout-close" aria-label="Закрыть">✕</button>
+  <section class="checkout-page" id="checkout-page" hidden>
+    <div class="checkout-page__inner">
+      <button type="button" class="checkout-page__back" id="checkout-close" data-i18n="back">← Назад</button>
       <div id="checkout-main">
-        <h3 class="auth-title" data-i18n="pay_title">Оплата</h3>
-        <div id="checkout-items"></div>
-        <div class="cart-total">
-          <span data-i18n="cart_total">Итого:</span>
-          <span class="checkout-price" id="checkout-total"></span>
-        </div>
-        <div class="pay-options">
-          <button type="button" class="pay-option pay-option--apple" data-pay="applepay">
-            <svg width="20" height="24" viewBox="0 0 24 29" fill="currentColor"><path d="M19.6 15.2c0-3.3 2.7-4.9 2.8-5-1.5-2.2-3.9-2.5-4.7-2.6-2-.2-3.9 1.2-4.9 1.2s-2.6-1.2-4.3-1.1c-2.2 0-4.2 1.3-5.3 3.2-2.3 3.9-.6 9.7 1.6 12.9 1.1 1.6 2.4 3.3 4.1 3.2 1.6-.1 2.3-1 4.2-1s2.5 1 4.3 1 2.9-1.6 3.9-3.1c1.2-1.8 1.7-3.5 1.8-3.6-.1-.1-3.5-1.4-3.5-5.1zM16.4 5.4c.9-1.1 1.5-2.6 1.3-4.1-1.3.1-2.9.9-3.8 1.9-.8 1-1.6 2.5-1.4 4 1.5.2 3-.7 3.9-1.8z"/></svg>
-            <span>Pay</span>
-          </button>
-          <button type="button" class="pay-option pay-option--card" data-pay="card">
-            <svg width="42" height="14" viewBox="0 0 42 14"><text x="0" y="12" font-family="Arial, sans-serif" font-size="13" font-weight="900" font-style="italic" fill="#1a5ed8">VISA</text></svg>
-            <svg width="26" height="16" viewBox="0 0 26 16"><circle cx="9" cy="8" r="7.5" fill="#eb001b"/><circle cx="17" cy="8" r="7.5" fill="#f79e1b" fill-opacity="0.9"/></svg>
-            <span data-i18n="pay_card">Банковская карта</span>
-          </button>
+        <h2 class="section-title checkout-page__title" data-i18n="pay_title">Оплата</h2>
+        <div class="checkout-page__grid">
+          <div id="checkout-items"></div>
+          <aside class="checkout-aside">
+            <div class="cart-total">
+              <span data-i18n="cart_total">Итого:</span>
+              <span class="checkout-price" id="checkout-total"></span>
+            </div>
+            <div class="pay-options">
+              <button type="button" class="pay-option pay-option--apple" data-pay="applepay">
+                <svg width="20" height="24" viewBox="0 0 24 29" fill="currentColor"><path d="M19.6 15.2c0-3.3 2.7-4.9 2.8-5-1.5-2.2-3.9-2.5-4.7-2.6-2-.2-3.9 1.2-4.9 1.2s-2.6-1.2-4.3-1.1c-2.2 0-4.2 1.3-5.3 3.2-2.3 3.9-.6 9.7 1.6 12.9 1.1 1.6 2.4 3.3 4.1 3.2 1.6-.1 2.3-1 4.2-1s2.5 1 4.3 1 2.9-1.6 3.9-3.1c1.2-1.8 1.7-3.5 1.8-3.6-.1-.1-3.5-1.4-3.5-5.1zM16.4 5.4c.9-1.1 1.5-2.6 1.3-4.1-1.3.1-2.9.9-3.8 1.9-.8 1-1.6 2.5-1.4 4 1.5.2 3-.7 3.9-1.8z"/></svg>
+                <span>Pay</span>
+              </button>
+              <button type="button" class="pay-option pay-option--card" data-pay="card">
+                <svg width="42" height="14" viewBox="0 0 42 14"><text x="0" y="12" font-family="Arial, sans-serif" font-size="13" font-weight="900" font-style="italic" fill="#1a5ed8">VISA</text></svg>
+                <svg width="26" height="16" viewBox="0 0 26 16"><circle cx="9" cy="8" r="7.5" fill="#eb001b"/><circle cx="17" cy="8" r="7.5" fill="#f79e1b" fill-opacity="0.9"/></svg>
+                <span data-i18n="pay_card">Банковская карта</span>
+              </button>
+            </div>
+          </aside>
         </div>
       </div>
       <div id="checkout-success" hidden>
-        <h3 class="auth-title">✅ <span data-i18n="pay_success_title">Заказ оформлен!</span></h3>
+        <h2 class="section-title checkout-page__title">✅ <span data-i18n="pay_success_title">Заказ оформлен!</span></h2>
         <p class="checkout-soon-text" data-i18n="pay_success_text">Тестовый режим — деньги не списаны. Статус заказа смотрите в профиле, в разделе «Мои заказы».</p>
-        <div class="auth-actions auth-actions--column">
+        <div class="auth-actions checkout-success-actions">
           <button type="button" class="btn btn--accent" id="checkout-orders" data-i18n="my_orders">Мои заказы</button>
           <button type="button" class="btn btn--ghost" id="checkout-support" data-i18n="pay_support">Написать в поддержку</button>
         </div>
       </div>
     </div>
-  </dialog>
+  </section>
 
   <dialog class="modal cart-modal" id="cart-modal">
     <div class="auth-box">
