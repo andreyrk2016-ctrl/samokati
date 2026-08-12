@@ -913,6 +913,29 @@
     });
   });
 
+  /* Письмо «заказ принят». Уходит, только если подключена почта
+     (см. ПОЧТА-НАСТРОЙКА.md): на почту аккаунта, а для гостя — на
+     почту из поля «телефон/почта», если он указал именно почту. */
+  function sendOrderEmail(order) {
+    if (!window.MAILER.configured) return;
+    var to = (AUTH.user && AUTH.user.email) ||
+      (EMAIL_RE.test(order.ship.contact) ? order.ship.contact : null);
+    if (!to) return;
+    var lines = order.items.map(function (item) {
+      return "• " + item.name + (item.color ? " (" + item.color + ")" : "") +
+        " ×" + item.qty + (item.price ? " — $" + item.price * item.qty : "");
+    });
+    window.MAILER.send(
+      to,
+      "Заказ №" + order.num + " принят — PRO SCOOTER SHOP",
+      "Спасибо за заказ!\n\n" + lines.join("\n") +
+      "\n\nИтого: $" + order.total +
+      "\nПолучатель: " + order.ship.name + ", " + order.ship.contact +
+      "\nАдрес доставки: " + order.ship.address +
+      "\n\nМагазин работает в тестовом режиме — оплата не списывалась."
+    );
+  }
+
   checkoutMain.addEventListener("click", function (event) {
     if (!event.target.closest(".pay-option")) return;
     var ship = {
@@ -947,6 +970,7 @@
     });
     orders.push({ num: orders.length + 1, items: orderItems, total: total, ts: Date.now(), ship: ship });
     storeWrite(ordersKey(), orders);
+    sendOrderEmail(orders[orders.length - 1]);
     if (checkoutFromCart) {
       cartData = [];
       saveCart();

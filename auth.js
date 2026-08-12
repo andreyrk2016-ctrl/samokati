@@ -33,21 +33,16 @@
     state.favs = readJson(favsKey(), []);
   }
 
-  /* Отправка кода на почту: через EmailJS, если задан window.EMAILJS_CONFIG
-     ({serviceId, templateId, publicKey}); иначе тестовый режим. */
+  /* Отправка кода на почту — через MAILER (см. ПОЧТА-НАСТРОЙКА.md);
+     если почта не подключена, код показывается на экране. */
   function sendCodeEmail(email, code) {
-    var cfg = window.EMAILJS_CONFIG;
-    if (!cfg) return Promise.resolve("test");
-    return fetch("https://api.emailjs.com/api/v1.0/email/send", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        service_id: cfg.serviceId,
-        template_id: cfg.templateId,
-        user_id: cfg.publicKey,
-        template_params: { to_email: email, code: code }
-      })
-    }).then(function (res) { return res.ok ? "sent" : "test"; }).catch(function () { return "test"; });
+    return window.MAILER.send(
+      email,
+      "Код подтверждения — PRO SCOOTER SHOP",
+      "Ваш код подтверждения: " + code + "\n\n" +
+      "Введите его на сайте, чтобы завершить регистрацию.\n" +
+      "Если вы не регистрировались — просто удалите это письмо."
+    );
   }
 
   var pendingReg = null;
