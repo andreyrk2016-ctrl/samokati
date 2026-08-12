@@ -17,7 +17,19 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+:root { color-scheme: dark; }
+
+html { scroll-behavior: smooth; background: #0a0c10; }
+
+/* Автозаполнение браузера не должно делать белый фон с белым текстом */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #eef2f7;
+  -webkit-box-shadow: 0 0 0 1000px #171d27 inset;
+  caret-color: #eef2f7;
+  transition: background-color 99999s ease-in-out 0s;
+}
 
 body {
   background: var(--bg);

@@ -148,7 +148,7 @@
     var favTotal = window.AUTH ? AUTH.favs().length : 0;
     html += '<button class="chip chip--fav' + (state.category === "__fav" ? " is-active" : "") +
       '" data-category="__fav"><span class="chip-heart">♥</span> ' +
-      escapeHtml(t("my_items") || "Мои товары") + (favTotal ? " (" + favTotal + ")" : "") + "</button>";
+      escapeHtml(t("fav_chip") || "Избранное") + (favTotal ? " (" + favTotal + ")" : "") + "</button>";
     chipsWrap.innerHTML = html;
   }
 
