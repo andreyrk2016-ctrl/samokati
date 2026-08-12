@@ -2185,3 +2185,37 @@ a { color: inherit; text-decoration: none; }
   padding: 8px 16px;
   letter-spacing: 0.01em;
 }
+
+/* Недавно смотрели + мелочи раунда 4 */
+
+.viewed { padding: clamp(40px, 6vw, 70px) 0 0; }
+
+.viewed .related-strip { margin-top: 22px; }
+
+.related-strip--viewed { grid-template-columns: repeat(6, 1fr); }
+
+@media (max-width: 1000px) {
+  .related-strip--viewed { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 560px) {
+  .related-strip--viewed { grid-template-columns: repeat(2, 1fr); }
+}
+
+.modal__avail {
+  margin: -6px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.img-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 120px;
+  font-size: 42px;
+  background: var(--panel-2);
+}

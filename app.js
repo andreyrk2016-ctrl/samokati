@@ -107,6 +107,7 @@
     applyStaticTexts();
     renderChips();
     renderGrid();
+    if (typeof renderViewed === "function") renderViewed();
     if (typeof renderAuthState === "function") renderAuthState();
     if (modal.open && modalState.product) {
       fillModalTexts(modalState.product);
@@ -401,6 +402,43 @@
     if (body) body.scrollTop = 0;
   });
 
+  /* ---------- Недавно смотрели ---------- */
+
+  var viewedSection = document.getElementById("viewed");
+  var viewedStrip = document.getElementById("viewed-strip");
+
+  function miniCardHtml(p) {
+    var img = p.images.length
+      ? '<img src="' + p.images[0] + '" alt="" loading="lazy">'
+      : "🛴";
+    return '<button type="button" class="related-card" data-id="' + p.id + '">' +
+      '<span class="related-card__photo">' + img + "</span>" +
+      '<span class="related-card__name">' + escapeHtml(trName(p)) + "</span>" +
+      '<span class="related-card__price">' + escapeHtml(formatPrice(p.price) || t("price_ask")) + "</span>" +
+      "</button>";
+  }
+
+  function renderViewed() {
+    var seen = storeRead("psshop-viewed", []);
+    var items = seen.map(function (id) {
+      return products.find(function (p) { return p.id === id; });
+    }).filter(Boolean).slice(0, 6);
+    viewedSection.hidden = items.length < 2;
+    viewedStrip.innerHTML = items.map(miniCardHtml).join("");
+  }
+
+  function recordView(id) {
+    var seen = storeRead("psshop-viewed", []).filter(function (x) { return x !== id; });
+    seen.unshift(id);
+    storeWrite("psshop-viewed", seen.slice(0, 8));
+    renderViewed();
+  }
+
+  viewedStrip.addEventListener("click", function (event) {
+    var card = event.target.closest(".related-card");
+    if (card) openModal(Number(card.dataset.id));
+  });
+
   function openModal(id) {
     var product = products.find(function (item) { return item.id === id; });
     if (!product) return;
@@ -415,7 +453,8 @@
 
     renderGalleryThumbs();
     showImage(0);
-    modal.showModal();
+    if (!modal.open) modal.showModal();
+    recordView(product.id);
   }
 
   function renderGalleryThumbs() {
@@ -482,9 +521,30 @@
     if (event.key === "ArrowRight") showImage(modalState.index + 1);
   });
 
+  // Свайп по фото на телефоне листает галерею
+  function attachSwipe(el) {
+    var startX = null;
+    var startY = null;
+    el.addEventListener("touchstart", function (event) {
+      startX = event.touches[0].clientX;
+      startY = event.touches[0].clientY;
+    }, { passive: true });
+    el.addEventListener("touchend", function (event) {
+      if (startX === null) return;
+      var dx = event.changedTouches[0].clientX - startX;
+      var dy = event.changedTouches[0].clientY - startY;
+      startX = null;
+      if (Math.abs(dx) < 45 || Math.abs(dx) < Math.abs(dy)) return;
+      showImage(modalState.index + (dx < 0 ? 1 : -1));
+    }, { passive: true });
+  }
+
   /* Клик по фото — полноэкранный просмотр */
   var lightbox = document.getElementById("lightbox");
   var lightboxImg = document.getElementById("lightbox-img");
+
+  attachSwipe(document.querySelector(".modal__gallery"));
+  attachSwipe(lightbox);
 
   modalImg.addEventListener("click", function () {
     if (!modalImg.src) return;
@@ -1347,5 +1407,19 @@
   applyStaticTexts();
   renderChips();
   renderGrid();
+  renderViewed();
   observeReveals();
+
+  /* Если фото не загрузилось (битый путь) — показываем заглушку */
+  document.addEventListener("error", function (event) {
+    var img = event.target;
+    if (!img || img.tagName !== "IMG" || img.dataset.fallback) return;
+    img.dataset.fallback = "1";
+    var box = img.parentNode;
+    if (!box) return;
+    var span = document.createElement("span");
+    span.className = "img-fallback";
+    span.textContent = "🛴";
+    box.replaceChild(span, img);
+  }, true);
 })();
