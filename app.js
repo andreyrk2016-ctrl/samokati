@@ -88,6 +88,7 @@
     applyStaticTexts();
     renderChips();
     renderGrid();
+    if (typeof renderAuthState === "function") renderAuthState();
     if (modal.open && modalState.product) {
       fillModalTexts(modalState.product);
       renderVariants(modalState.product);
@@ -375,6 +376,10 @@
     lightbox.hidden = true;
   });
 
+  modal.addEventListener("close", function () {
+    lightbox.hidden = true;
+  });
+
   /* ---------- Выбор цвета ---------- */
 
   var modalVariants = document.getElementById("modal-variants");
@@ -470,8 +475,11 @@
     supMsg(escapeHtml(text), "user");
 
     var answerKey = null;
-    for (var i = 0; i < INTENTS.length; i++) {
-      if (INTENTS[i][0].test(text)) { answerKey = INTENTS[i][1]; break; }
+    var isOrder = /хочу заказать|i want to order|quiero pedir/i.test(text);
+    if (!isOrder) {
+      for (var i = 0; i < INTENTS.length; i++) {
+        if (INTENTS[i][0].test(text)) { answerKey = INTENTS[i][1]; break; }
+      }
     }
 
     setTimeout(function () {
@@ -696,11 +704,12 @@
     }
   });
 
-  document.getElementById("modal-cart").addEventListener("click", function (event) {
+  document.getElementById("modal-cart").addEventListener("click", function () {
     if (!modalState.product) return;
     cartAdd(modalState.product.name, modalState.color);
-    event.target.textContent = "✓";
-    setTimeout(function () { applyStaticTexts(); }, 800);
+    var btn = document.getElementById("modal-cart");
+    btn.textContent = "✓";
+    setTimeout(function () { btn.textContent = t("add_cart"); }, 800);
   });
 
   modalSupport.addEventListener("click", function () {
@@ -862,6 +871,19 @@
 
   if (window.AUTH) {
     AUTH.onChange(function () {
+      // Заказы, сделанные до входа, переносим в аккаунт
+      if (AUTH.user) {
+        var guestOrders = storeRead("psshop-orders-guest", []);
+        if (guestOrders.length) {
+          var userOrders = loadOrders();
+          guestOrders.forEach(function (order) {
+            order.num = userOrders.length + 1;
+            userOrders.push(order);
+          });
+          storeWrite(ordersKey(), userOrders);
+          storeWrite("psshop-orders-guest", []);
+        }
+      }
       renderAuthState();
       renderChips();
       renderGrid();
