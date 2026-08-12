@@ -782,6 +782,7 @@
     favsCountEl.textContent = window.AUTH ? AUTH.favs().length : 0;
     ordersCountEl.textContent = ordersCount();
     authLocalNote.hidden = !(window.AUTH && AUTH.mode === "local");
+    if (typeof resetLogoutBtn === "function") resetLogoutBtn();
   }
 
   function renderOrders() {
@@ -868,7 +869,27 @@
     });
   });
 
-  document.getElementById("profile-logout").addEventListener("click", function () {
+  var logoutBtn = document.getElementById("profile-logout");
+  var logoutArmed = false;
+  var logoutTimer = null;
+
+  function resetLogoutBtn() {
+    logoutArmed = false;
+    clearTimeout(logoutTimer);
+    logoutBtn.textContent = t("auth_logout");
+    logoutBtn.classList.remove("btn--danger");
+  }
+
+  logoutBtn.addEventListener("click", function () {
+    if (!logoutArmed) {
+      // Первое нажатие — предупреждение, второе — выход
+      logoutArmed = true;
+      logoutBtn.textContent = t("auth_logout_confirm");
+      logoutBtn.classList.add("btn--danger");
+      logoutTimer = setTimeout(resetLogoutBtn, 4000);
+      return;
+    }
+    resetLogoutBtn();
     AUTH.logout().then(function () {
       if (state.category === "__fav") state.category = "all";
       renderAuthState();

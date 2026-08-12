@@ -587,6 +587,11 @@ a { color: inherit; text-decoration: none; }
 
 .auth-actions--column { flex-direction: column; }
 
+.btn--danger {
+  border-color: #ff6b6b !important;
+  color: #ff6b6b !important;
+}
+
 .auth-note {
   margin-top: 14px;
   color: var(--muted);
