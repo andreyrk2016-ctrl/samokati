@@ -130,6 +130,158 @@ a { color: inherit; text-decoration: none; }
   background: var(--panel-2);
 }
 
+/* ---------- Профиль и вход ---------- */
+
+.topbar__right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.profile-btn:hover { border-color: var(--accent); }
+
+.profile-btn.is-logged {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+
+.auth-modal { max-width: 420px; }
+
+.auth-box {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 34px 28px 28px;
+  color: var(--text);
+}
+
+.auth-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 22px;
+  margin-bottom: 18px;
+}
+
+.auth-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: #1a1a1a;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.auth-google:hover { transform: translateY(-2px); }
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 16px 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+#auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#auth-form input {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 11px 14px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  outline: none;
+}
+
+#auth-form input:focus { border-color: var(--accent); }
+
+.auth-error {
+  color: #ff7a7a;
+  font-size: 13.5px;
+}
+
+.auth-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.auth-actions .btn { flex: 1; padding: 12px 10px; font-size: 13px; }
+
+.auth-actions--column { flex-direction: column; }
+
+.auth-note {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+/* Сердечки на карточках */
+
+.card__fav {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: rgba(10, 12, 16, 0.65);
+  color: var(--text);
+  font-size: 17px;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.card__fav:hover { transform: scale(1.12); }
+
+.card__fav.is-fav {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+
+.chip--fav .chip-heart { color: #ff5c8a; }
+
 /* ---------- Переключатель языка ---------- */
 
 .lang-switch {

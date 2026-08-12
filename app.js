@@ -144,6 +144,10 @@
         '" data-category="' + escapeHtml(category) + '">' +
         escapeHtml(trCategory(category)) + "</button>";
     });
+    var favTotal = window.AUTH ? AUTH.favs().length : 0;
+    html += '<button class="chip chip--fav' + (state.category === "__fav" ? " is-active" : "") +
+      '" data-category="__fav"><span class="chip-heart">♥</span> ' +
+      escapeHtml(t("my_items") || "Мои товары") + (favTotal ? " (" + favTotal + ")" : "") + "</button>";
     chipsWrap.innerHTML = html;
   }
 
@@ -166,7 +170,12 @@
 
   function getVisibleProducts() {
     return products.filter(function (product) {
-      var matchesCategory = state.category === "all" || product.category === state.category;
+      var matchesCategory;
+      if (state.category === "__fav") {
+        matchesCategory = window.AUTH && AUTH.isFav(product.name);
+      } else {
+        matchesCategory = state.category === "all" || product.category === state.category;
+      }
       var matchesQuery = !state.query ||
         product.name.toLowerCase().indexOf(state.query) !== -1 ||
         trName(product).toLowerCase().indexOf(state.query) !== -1 ||
@@ -186,9 +195,16 @@
     return "";
   }
 
+  function favBtnHtml(product) {
+    var isFav = window.AUTH && AUTH.isFav(product.name);
+    return '<button type="button" class="card__fav' + (isFav ? " is-fav" : "") +
+      '" data-fav="' + escapeHtml(product.name) + '" aria-label="В избранное">' +
+      (isFav ? "♥" : "♡") + "</button>";
+  }
+
   function cardHtml(product) {
     var name = trName(product);
-    var photo = badgeHtml(product) + (product.images.length
+    var photo = badgeHtml(product) + favBtnHtml(product) + (product.images.length
       ? '<img src="' + product.images[0] + '" alt="' + escapeHtml(name) + '" loading="lazy">'
       : '<span class="card__photo--empty" style="height:100%">🛴</span>');
 
@@ -218,11 +234,25 @@
     var visible = getVisibleProducts();
     grid.innerHTML = visible.map(cardHtml).join("");
     emptyEl.hidden = visible.length > 0;
+    if (!visible.length) {
+      emptyEl.textContent = state.category === "__fav" ? t("favs_empty") : t("empty");
+    }
     countEl.textContent = formatCount(visible.length);
     observeReveals();
   }
 
   grid.addEventListener("click", function (event) {
+    var favBtn = event.target.closest(".card__fav");
+    if (favBtn) {
+      event.stopPropagation();
+      var nowFav = AUTH.toggleFav(favBtn.dataset.fav);
+      favBtn.classList.toggle("is-fav", nowFav);
+      favBtn.textContent = nowFav ? "♥" : "♡";
+      renderChips();
+      if (state.category === "__fav") renderGrid();
+      if (typeof renderAuthState === "function") renderAuthState();
+      return;
+    }
     if (event.target.closest("a")) return; // кнопка «Купить» работает сама
     var card = event.target.closest(".card");
     if (card) openModal(Number(card.dataset.id));
@@ -462,6 +492,121 @@
     modal.close();
     openSupport(prefill);
   });
+
+  /* ---------- Профиль и «Мои товары» ---------- */
+
+  var authModal = document.getElementById("auth-modal");
+  var authForms = document.getElementById("auth-forms");
+  var authProfile = document.getElementById("auth-profile");
+  var authForm = document.getElementById("auth-form");
+  var authNameEl = document.getElementById("auth-name");
+  var authEmailEl = document.getElementById("auth-email");
+  var authPassEl = document.getElementById("auth-pass");
+  var authError = document.getElementById("auth-error");
+  var authGoogleBtn = document.getElementById("auth-google");
+  var authRegisterBtn = document.getElementById("auth-register");
+  var profileBtn = document.getElementById("profile-btn");
+  var profileIcon = document.getElementById("profile-icon");
+  var profileHello = document.getElementById("profile-hello");
+  var favsCountEl = document.getElementById("favs-count");
+  var authLocalNote = document.getElementById("auth-local-note");
+
+  function renderAuthState() {
+    var user = window.AUTH ? AUTH.user : null;
+    profileBtn.classList.toggle("is-logged", !!user);
+    profileIcon.textContent = user ? (user.name || user.email || "?").charAt(0).toUpperCase() : "👤";
+    authForms.hidden = !!user;
+    authProfile.hidden = !user;
+    if (user) {
+      profileHello.textContent = t("auth_hello") + ", " + (user.name || user.email) + "!";
+    }
+    favsCountEl.textContent = window.AUTH ? AUTH.favs().length : 0;
+    authLocalNote.hidden = !(window.AUTH && AUTH.mode === "local");
+  }
+
+  function authFail(error) {
+    var message = (error && error.message) || "";
+    var key = "auth_err_creds";
+    if (message === "exists" || /email-already/.test(message)) key = "auth_err_exists";
+    else if (/weak-password/.test(message)) key = "auth_err_weak";
+    authError.textContent = t(key);
+    authError.hidden = false;
+  }
+
+  function authSuccess() {
+    authError.hidden = true;
+    authForm.reset();
+    renderAuthState();
+    renderChips();
+    renderGrid();
+  }
+
+  profileBtn.addEventListener("click", function () {
+    renderAuthState();
+    authError.hidden = true;
+    authModal.showModal();
+  });
+
+  document.getElementById("auth-close").addEventListener("click", function () {
+    authModal.close();
+  });
+
+  authModal.addEventListener("click", function (event) {
+    if (event.target === authModal) authModal.close();
+  });
+
+  authForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    AUTH.login(authEmailEl.value.trim(), authPassEl.value).then(authSuccess).catch(authFail);
+  });
+
+  authRegisterBtn.addEventListener("click", function () {
+    if (!authEmailEl.value.trim() || !authPassEl.value) return;
+    if (authPassEl.value.length < 6) { authFail({ message: "weak-password" }); return; }
+    AUTH.register(authEmailEl.value.trim(), authPassEl.value, authNameEl.value.trim())
+      .then(authSuccess).catch(authFail);
+  });
+
+  authGoogleBtn.addEventListener("click", function () {
+    AUTH.loginGoogle().then(authSuccess).catch(function (error) {
+      if (error && error.message === "needs-firebase") {
+        authError.textContent = t("auth_err_google");
+        authError.hidden = false;
+      } else {
+        authFail(error);
+      }
+    });
+  });
+
+  document.getElementById("profile-logout").addEventListener("click", function () {
+    AUTH.logout().then(function () {
+      if (state.category === "__fav") state.category = "all";
+      renderAuthState();
+      renderChips();
+      renderGrid();
+    });
+  });
+
+  document.getElementById("profile-favs").addEventListener("click", function () {
+    authModal.close();
+    state.category = "__fav";
+    renderChips();
+    renderGrid();
+    document.getElementById("catalog").scrollIntoView({ behavior: "smooth" });
+  });
+
+  if (window.AUTH) {
+    AUTH.onChange(function () {
+      renderAuthState();
+      renderChips();
+      renderGrid();
+    });
+    AUTH.ready.then(function () {
+      renderAuthState();
+      renderChips();
+      renderGrid();
+    });
+  }
 
   /* ---------- Эффекты ---------- */
 
