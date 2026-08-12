@@ -516,6 +516,78 @@ a { color: inherit; text-decoration: none; }
   margin-bottom: 18px;
 }
 
+.auth-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  margin-bottom: 18px;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.auth-tab.is-active {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.modal__tag-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.modal__fav {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--text);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.modal__fav:hover { border-color: var(--accent); }
+
+.modal__fav.is-fav {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+#code-form { display: flex; flex-direction: column; gap: 10px; }
+
+#code-form input {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 18px;
+  letter-spacing: 0.3em;
+  text-align: center;
+  outline: none;
+}
+
+#code-form input:focus { border-color: var(--accent); }
+
 .auth-google {
   display: flex;
   align-items: center;
@@ -597,6 +669,19 @@ a { color: inherit; text-decoration: none; }
   color: var(--muted);
   font-size: 12.5px;
 }
+
+.link-btn {
+  margin-top: 10px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.link-btn:hover { color: var(--text); }
 
 /* Сердечки на карточках */
 

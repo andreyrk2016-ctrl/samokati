@@ -284,12 +284,21 @@
 
   /* ---------- Модальное окно ---------- */
 
+  function updateModalFav(product) {
+    var favBtn = document.getElementById("modal-fav");
+    var isFav = window.AUTH && AUTH.isFav(product.name);
+    favBtn.innerHTML = (isFav ? "♥ " : "♡ ") +
+      "<span>" + escapeHtml(isFav ? t("fav_added") : t("fav_add")) + "</span>";
+    favBtn.classList.toggle("is-fav", isFav);
+  }
+
   function fillModalTexts(product) {
     modalTag.textContent = trCategory(product.category);
     modalName.textContent = trName(product);
     modalPrice.textContent = formatPrice(product.price);
     modalDesc.textContent = trDesc(product);
-    modalBuy.textContent = t("buy_more") || "Купить / Подробнее";
+    modalBuy.textContent = t("buy_now") || "Купить сейчас";
+    updateModalFav(product);
   }
 
   function openModal(id) {
@@ -726,6 +735,15 @@
     }
   });
 
+  document.getElementById("modal-fav").addEventListener("click", function () {
+    if (!modalState.product) return;
+    AUTH.toggleFav(modalState.product.name);
+    updateModalFav(modalState.product);
+    renderChips();
+    renderGrid();
+    if (typeof renderAuthState === "function") renderAuthState();
+  });
+
   document.getElementById("modal-cart").addEventListener("click", function () {
     if (!modalState.product) return;
     cartAdd(modalState.product.name, modalState.color);
@@ -749,18 +767,23 @@
   var authModal = document.getElementById("auth-modal");
   var authForms = document.getElementById("auth-forms");
   var authProfile = document.getElementById("auth-profile");
-  var authForm = document.getElementById("auth-form");
-  var authNameEl = document.getElementById("auth-name");
-  var authEmailEl = document.getElementById("auth-email");
-  var authPassEl = document.getElementById("auth-pass");
+  var authCode = document.getElementById("auth-code");
+  var loginForm = document.getElementById("login-form");
+  var registerForm = document.getElementById("register-form");
+  var codeForm = document.getElementById("code-form");
   var authError = document.getElementById("auth-error");
+  var regError = document.getElementById("reg-error");
+  var codeError = document.getElementById("code-error");
   var authGoogleBtn = document.getElementById("auth-google");
-  var authRegisterBtn = document.getElementById("auth-register");
+  var tabLogin = document.getElementById("tab-login");
+  var tabRegister = document.getElementById("tab-register");
   var profileBtn = document.getElementById("profile-btn");
   var profileIcon = document.getElementById("profile-icon");
   var profileHello = document.getElementById("profile-hello");
   var favsCountEl = document.getElementById("favs-count");
   var authLocalNote = document.getElementById("auth-local-note");
+  var codeResendBtn = document.getElementById("code-resend");
+  var codeTestNote = document.getElementById("code-test-note");
 
   var authOrders = document.getElementById("auth-orders");
   var ordersListEl = document.getElementById("orders-list");
@@ -773,9 +796,12 @@
     profileBtn.classList.toggle("is-logged", !!user);
     profileIcon.textContent = user ? (user.name || user.email || "?").charAt(0).toUpperCase() : "👤";
     profileLabel.textContent = user ? (user.name || user.email).split("@")[0].slice(0, 12) : t("auth_login");
-    authForms.hidden = !!user;
+    // Если гость сейчас вводит код из письма — не сбрасываем эту панель
+    var keepCode = !user && !authCode.hidden;
+    authForms.hidden = !!user || keepCode;
     authProfile.hidden = !user;
     authOrders.hidden = true;
+    authCode.hidden = !keepCode;
     if (user) {
       profileHello.textContent = t("auth_hello") + ", " + (user.name || user.email) + "!";
     }
@@ -812,19 +838,33 @@
 
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
 
-  function authFail(error) {
+  function errKey(error) {
     var message = (error && error.message) || "";
-    var key = "auth_err_creds";
-    if (message === "exists" || /email-already/.test(message)) key = "auth_err_exists";
-    else if (/weak-password/.test(message)) key = "auth_err_weak";
-    else if (/bad-email|invalid-email/.test(message)) key = "auth_err_email";
-    authError.textContent = t(key);
-    authError.hidden = false;
+    if (message === "exists" || /email-already/.test(message)) return "auth_err_exists";
+    if (/weak-password/.test(message)) return "auth_err_weak";
+    if (/bad-email|invalid-email/.test(message)) return "auth_err_email";
+    if (/pass-match/.test(message)) return "auth_err_pass_match";
+    if (/bad-code/.test(message)) return "code_err";
+    return "auth_err_creds";
   }
+
+  function showErr(el, error) {
+    el.textContent = t(errKey(error));
+    el.hidden = false;
+  }
+
+  function authFail(error) { showErr(authError, error); }
 
   function authSuccess() {
     authError.hidden = true;
-    authForm.reset();
+    regError.hidden = true;
+    codeError.hidden = true;
+    loginForm.reset();
+    registerForm.reset();
+    codeForm.reset();
+    stopResendTimer();
+    authCode.hidden = true;
+    setAuthTab(false);
     renderAuthState();
     renderChips();
     renderGrid();
@@ -844,18 +884,106 @@
     if (event.target === authModal) authModal.close();
   });
 
-  authForm.addEventListener("submit", function (event) {
+  function setAuthTab(register) {
+    tabLogin.classList.toggle("is-active", !register);
+    tabRegister.classList.toggle("is-active", register);
+    loginForm.hidden = register;
+    registerForm.hidden = !register;
+    authError.hidden = true;
+    regError.hidden = true;
+  }
+
+  tabLogin.addEventListener("click", function () { setAuthTab(false); });
+  tabRegister.addEventListener("click", function () { setAuthTab(true); });
+
+  loginForm.addEventListener("submit", function (event) {
     event.preventDefault();
-    AUTH.login(authEmailEl.value.trim(), authPassEl.value).then(authSuccess).catch(authFail);
+    AUTH.login(document.getElementById("login-email").value.trim(),
+      document.getElementById("login-pass").value).then(authSuccess).catch(authFail);
   });
 
-  authRegisterBtn.addEventListener("click", function () {
-    var email = authEmailEl.value.trim();
-    if (!email || !authPassEl.value) return;
-    if (!EMAIL_RE.test(email)) { authFail({ message: "bad-email" }); return; }
-    if (authPassEl.value.length < 6) { authFail({ message: "weak-password" }); return; }
-    AUTH.register(email, authPassEl.value, authNameEl.value.trim())
-      .then(authSuccess).catch(authFail);
+  /* Регистрация с кодом подтверждения */
+
+  var resendInterval = null;
+  var resendLeft = 0;
+
+  function stopResendTimer() {
+    clearInterval(resendInterval);
+    resendInterval = null;
+  }
+
+  function startResendTimer() {
+    resendLeft = 120;
+    codeResendBtn.disabled = true;
+    stopResendTimer();
+    function tick() {
+      if (resendLeft <= 0) {
+        stopResendTimer();
+        codeResendBtn.disabled = false;
+        codeResendBtn.textContent = t("code_resend");
+        return;
+      }
+      var m = Math.floor(resendLeft / 60);
+      var s = ("0" + (resendLeft % 60)).slice(-2);
+      codeResendBtn.textContent = t("code_resend") + " (" + m + ":" + s + ")";
+      resendLeft -= 1;
+    }
+    tick();
+    resendInterval = setInterval(tick, 1000);
+  }
+
+  function showCodePane(email, result) {
+    authForms.hidden = true;
+    authCode.hidden = false;
+    document.getElementById("code-email").textContent = email;
+    codeError.hidden = true;
+    if (result && result.testCode) {
+      codeTestNote.textContent = t("code_test_note") + result.testCode;
+      codeTestNote.hidden = false;
+    } else {
+      codeTestNote.hidden = true;
+    }
+    startResendTimer();
+    document.getElementById("code-input").focus();
+  }
+
+  registerForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    var nick = document.getElementById("reg-name").value.trim();
+    var email = document.getElementById("reg-email").value.trim();
+    var pass = document.getElementById("reg-pass").value;
+    var pass2 = document.getElementById("reg-pass2").value;
+    if (!nick || !email) return;
+    if (!EMAIL_RE.test(email)) { showErr(regError, { message: "bad-email" }); return; }
+    if (pass.length < 6) { showErr(regError, { message: "weak-password" }); return; }
+    if (pass !== pass2) { showErr(regError, { message: "pass-match" }); return; }
+    AUTH.startRegister(email, pass, nick).then(function (result) {
+      if (result && result.mode === "firebase-link") { authSuccess(); return; }
+      showCodePane(email, result);
+    }).catch(function (error) { showErr(regError, error); });
+  });
+
+  codeForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+    AUTH.confirmCode(document.getElementById("code-input").value)
+      .then(authSuccess)
+      .catch(function (error) { showErr(codeError, error); });
+  });
+
+  document.getElementById("code-back").addEventListener("click", function () {
+    stopResendTimer();
+    authCode.hidden = true;
+    renderAuthState();
+  });
+
+  codeResendBtn.addEventListener("click", function () {
+    AUTH.resendCode().then(function (result) {
+      if (result && result.testCode) {
+        codeTestNote.textContent = t("code_test_note") + result.testCode;
+        codeTestNote.hidden = false;
+      }
+      startResendTimer();
+    }).catch(function () {});
   });
 
   authGoogleBtn.addEventListener("click", function () {
@@ -892,6 +1020,7 @@
     resetLogoutBtn();
     AUTH.logout().then(function () {
       if (state.category === "__fav") state.category = "all";
+      setAuthTab(false);
       renderAuthState();
       renderChips();
       renderGrid();
@@ -899,6 +1028,11 @@
   });
 
   document.getElementById("profile-orders").addEventListener("click", openOrdersPane);
+
+  document.getElementById("nav-orders").addEventListener("click", function (event) {
+    event.preventDefault();
+    openOrdersPane();
+  });
 
   document.getElementById("orders-back").addEventListener("click", function () {
     renderAuthState();

@@ -33,6 +33,25 @@
     state.favs = readJson(favsKey(), []);
   }
 
+  /* Отправка кода на почту: через EmailJS, если задан window.EMAILJS_CONFIG
+     ({serviceId, templateId, publicKey}); иначе тестовый режим. */
+  function sendCodeEmail(email, code) {
+    var cfg = window.EMAILJS_CONFIG;
+    if (!cfg) return Promise.resolve("test");
+    return fetch("https://api.emailjs.com/api/v1.0/email/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        service_id: cfg.serviceId,
+        template_id: cfg.templateId,
+        user_id: cfg.publicKey,
+        template_params: { to_email: email, code: code }
+      })
+    }).then(function (res) { return res.ok ? "sent" : "test"; }).catch(function () { return "test"; });
+  }
+
+  var pendingReg = null;
+
   var LocalAuth = {
     init: function () {
       var saved = readJson("psshop-session", null);
@@ -40,6 +59,30 @@
       localLoadFavs();
       notify();
       return Promise.resolve();
+    },
+    startRegister: function (email, password, name) {
+      var users = readJson("psshop-users", {});
+      if (users[email]) return Promise.reject(new Error("exists"));
+      var code = String(Math.floor(1000 + Math.random() * 9000));
+      pendingReg = { email: email, password: password, name: name, code: code };
+      return sendCodeEmail(email, code).then(function (mode) {
+        return { mode: mode, testCode: mode === "test" ? code : null };
+      });
+    },
+    resendCode: function () {
+      if (!pendingReg) return Promise.reject(new Error("no-pending"));
+      pendingReg.code = String(Math.floor(1000 + Math.random() * 9000));
+      return sendCodeEmail(pendingReg.email, pendingReg.code).then(function (mode) {
+        return { mode: mode, testCode: mode === "test" ? pendingReg.code : null };
+      });
+    },
+    confirmCode: function (code) {
+      if (!pendingReg || String(code).trim() !== pendingReg.code) {
+        return Promise.reject(new Error("bad-code"));
+      }
+      var reg = pendingReg;
+      pendingReg = null;
+      return LocalAuth.register(reg.email, reg.password, reg.name);
     },
     register: function (email, password, name) {
       var users = readJson("psshop-users", {});
@@ -124,6 +167,17 @@
         if (name) return cred.user.updateProfile({ displayName: name });
       });
     },
+    startRegister: function (email, password, name) {
+      // В режиме Firebase код не нужен: придёт письмо со ссылкой
+      return FirebaseAuth.register(email, password, name).then(function () {
+        return { mode: "firebase-link", testCode: null };
+      });
+    },
+    resendCode: function () {
+      if (fb.auth.currentUser) fb.auth.currentUser.sendEmailVerification().catch(function () {});
+      return Promise.resolve({ mode: "firebase-link", testCode: null });
+    },
+    confirmCode: function () { return Promise.resolve(); },
     login: function (email, password) {
       return fb.auth.signInWithEmailAndPassword(email, password);
     },
@@ -156,6 +210,9 @@
     get user() { return state.user; },
     onChange: function (cb) { listeners.push(cb); },
     register: function (e, p, n) { return backend.register(e, p, n); },
+    startRegister: function (e, p, n) { return backend.startRegister(e, p, n); },
+    resendCode: function () { return backend.resendCode(); },
+    confirmCode: function (c) { return backend.confirmCode(c); },
     login: function (e, p) { return backend.login(e, p); },
     loginGoogle: function () { return backend.loginGoogle(); },
     logout: function () { return backend.logout(); },
