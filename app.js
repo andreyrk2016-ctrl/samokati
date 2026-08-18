@@ -854,7 +854,19 @@
     }
   });
 
+  /* Оплата доступна только после входа: гостю показываем окно входа,
+     а его заказ запоминаем и продолжаем сразу после входа. */
+  var pendingCheckout = null;
+
   function openCheckout(items, fromCart) {
+    if (!AUTH.user) {
+      pendingCheckout = { items: items, fromCart: fromCart };
+      renderAuthState();
+      authError.hidden = true;
+      authBuyNote.hidden = false;
+      authModal.showModal();
+      return;
+    }
     checkoutList = items;
     checkoutFromCart = fromCart;
     checkoutMain.hidden = false;
@@ -1079,6 +1091,7 @@
   var registerForm = document.getElementById("register-form");
   var codeForm = document.getElementById("code-form");
   var authError = document.getElementById("auth-error");
+  var authBuyNote = document.getElementById("auth-buy-note");
   var regError = document.getElementById("reg-error");
   var codeError = document.getElementById("code-error");
   var authGoogleBtn = document.getElementById("auth-google");
@@ -1328,12 +1341,25 @@
     renderAuthState();
     renderChips();
     renderGrid();
+    if (AUTH.user && pendingCheckout) {
+      var pc = pendingCheckout;
+      pendingCheckout = null;
+      authModal.close();
+      openCheckout(pc.items, pc.fromCart);
+    }
   }
 
   profileBtn.addEventListener("click", function () {
     renderAuthState();
     authError.hidden = true;
+    authBuyNote.hidden = true;
     authModal.showModal();
+  });
+
+  // Окно входа закрыли, не войдя — отложенный заказ забываем
+  authModal.addEventListener("close", function () {
+    pendingCheckout = null;
+    authBuyNote.hidden = true;
   });
 
   document.getElementById("auth-close").addEventListener("click", function () {
