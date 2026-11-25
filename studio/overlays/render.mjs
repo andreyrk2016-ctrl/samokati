@@ -127,7 +127,7 @@ function card(c) {
         <div class="center gold" style="bottom:${250 + size * 1.15}px;font-family:Lob;font-size:76px;line-height:1.1;">С Новым годом,</div>
         <div class="center gold" style="bottom:236px;font-family:Lob;font-size:${size}px;line-height:1.15;">${name}!</div>
         <div class="center caps white" style="bottom:168px;font-size:27px;">${esc(c.sub || "твой Дедушка Мороз")}</div>
-        ${c.brand ? `<div class="center white" style="bottom:70px;font-size:23px;opacity:.85;">${esc(c.brand)}</div>` : ""}`;
+        ${c.brand ? `<div class="center white" style="bottom:66px;font-size:27px;line-height:1.25;opacity:.92;">${esc(c.brand)}</div>` : ""}`;
     }
     case "caption": // произвольная строка внизу (для своих сценариев)
       return `
