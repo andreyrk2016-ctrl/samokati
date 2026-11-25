@@ -2,3 +2,11 @@ __pycache__/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Студия поздравлений: исходники клипов, кэш озвучки и заказы клиентов в репозиторий не попадают
+studio/assets/raw/
+studio/.cache/
+studio/out/
+studio/orders/*
+!studio/orders/_пример*.json
+__pycache__/

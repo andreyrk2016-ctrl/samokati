@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Именное видеопоздравление от Деда Мороза — Волшебная почта</title>
+  <meta name="description" content="Дед Мороз назовёт ребёнка по имени, расскажет о его успехах и передаст привет от близких. Готово за 1–2 часа. Сначала смотрите образец — потом платите.">
+  <meta name="theme-color" content="#071432">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Именное видеопоздравление от Деда Мороза">
+  <meta property="og:description" content="Назовёт ребёнка по имени, похвалит за успехи, передаст привет от мамы и папы. Оплата — после просмотра.">
+  <meta property="og:image" content="https://andreyrk2016-ctrl.github.io/samokati/moroz/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎅</text></svg>">
+  <link rel="preload" href="fonts/Kurale-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="fonts/Lobster-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="snow" aria-hidden="true"></canvas>
+
+  <header class="top">
+    <div class="wrap top__in">
+      <a class="brand" href="#top" aria-label="Волшебная почта Деда Мороза">
+        <span class="brand__small">Волшебная почта</span>
+        <span class="brand__big">Деда Мороза</span>
+      </a>
+      <a class="btn btn--gold btn--sm" href="#order">Заказать</a>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- ───────── Первый экран ───────── -->
+    <section class="hero">
+      <div class="wrap hero__in">
+        <div class="hero__text">
+          <p class="eyebrow">Новый год 2027 · для детей от 2 до 10 лет</p>
+          <h1>Видеопоздравление от&nbsp;Деда Мороза <span class="gold">с&nbsp;именем вашего ребёнка</span></h1>
+          <p class="lead">Дед Мороз назовёт малыша по имени, расскажет, что знает о&nbsp;его успехах, и&nbsp;передаст привет от&nbsp;мамы и&nbsp;папы. Ролик до&nbsp;двух минут — пришлём в&nbsp;мессенджер.</p>
+          <ul class="ticks">
+            <li>Готово за <b data-cfg="eta">1–2 часа</b></li>
+            <li>Сначала смотрите образец — <b>потом платите</b></li>
+            <li>Текст поправим бесплатно</li>
+          </ul>
+          <div class="hero__cta">
+            <a class="btn btn--gold" href="#order">Заказать за <span data-cfg="price">490</span>&nbsp;₽</a>
+            <span class="was"><s><span data-cfg="priceOld">790</span> ₽</s> до <span data-cfg="promoUntil">10 декабря</span></span>
+          </div>
+        </div>
+        <div class="hero__media">
+          <figure class="phone">
+            <video controls playsinline preload="none" poster="img/poster-misha.jpg">
+              <source src="video/demo-misha.mp4" type="video/mp4">
+            </video>
+            <figcaption>Образец: поздравление для Миши, 6 лет</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── Что внутри ───────── -->
+    <section class="sec">
+      <div class="wrap">
+        <h2>Дед Мороз знает о ребёнке всё</h2>
+        <p class="sub">Вы заполняете короткую анкету — а малыш слышит то, что могут знать только свои.</p>
+        <div class="cards">
+          <article class="card" style="--img:url('img/book.jpg')">
+            <div class="card__body"><h3>Имя и возраст</h3><p>«Миша, тебе ведь уже шесть лет. Как же ты вырос!» — и имя золотыми буквами в волшебной книге. Можно добавить фото.</p></div>
+          </article>
+          <article class="card" style="--img:url('img/ded.jpg')">
+            <div class="card__body"><h3>Добрые дела</h3><p>До трёх достижений: научился читать, помогает маме, ходит на плавание. Дед Мороз похвалит за каждое.</p></div>
+          </article>
+          <article class="card" style="--img:url('img/gifts.jpg')">
+            <div class="card__body"><h3>Наказ и заветное желание</h3><p>Мягко напомнит убирать игрушки — и намекнёт, что подарок уже в мешке.</p></div>
+          </article>
+          <article class="card" style="--img:url('img/elka.jpg')">
+            <div class="card__body"><h3>Привет от близких</h3><p>«Тебя очень любят — мама Оля, папа Дима и бабушка Таня». Финал с ёлкой и салютом.</p></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── Образцы ───────── -->
+    <section class="sec sec--dark" id="samples">
+      <div class="wrap">
+        <h2>Посмотрите, как это выглядит</h2>
+        <p class="sub">Это настоящие ролики — вы получите такой же, только про вашего ребёнка.</p>
+        <div class="samples">
+          <figure class="phone">
+            <video controls playsinline preload="none" poster="img/poster-sonya.jpg">
+              <source src="video/demo-sonya.mp4" type="video/mp4">
+            </video>
+            <figcaption>Для Сони, 4 года</figcaption>
+          </figure>
+          <figure class="phone">
+            <video controls playsinline preload="none" poster="img/poster-misha2.jpg">
+              <source src="video/demo-misha.mp4" type="video/mp4">
+            </video>
+            <figcaption>Для Миши, 6 лет</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── Как заказать ───────── -->
+    <section class="sec">
+      <div class="wrap">
+        <h2>Три шага — и видео у вас</h2>
+        <ol class="steps">
+          <li><b>Заполните анкету</b><span>Имя, возраст, пара достижений — две минуты.</span></li>
+          <li><b>Посмотрите образец</b><span>Пришлём ваш ролик с водяным знаком. Захотите что-то поправить — поправим.</span></li>
+          <li><b>Оплатите и получите видео</b><span>Переводом по СБП. Сразу после оплаты — чистый ролик без знака.</span></li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ───────── Цены ───────── -->
+    <section class="sec sec--dark" id="prices">
+      <div class="wrap">
+        <h2>Сколько стоит</h2>
+        <div class="prices">
+          <div class="price price--main">
+            <h3>Для одного ребёнка</h3>
+            <p class="price__num"><span data-cfg="price">490</span> ₽ <s><span data-cfg="priceOld">790</span> ₽</s></p>
+            <p>Именной ролик до 2 минут: имя, возраст, добрые дела, наказ, желание, привет от близких, фото.</p>
+            <a class="btn btn--gold" href="#order" data-plan="Для одного ребёнка">Заказать</a>
+          </div>
+          <div class="price">
+            <h3>Для двоих детей</h3>
+            <p class="price__num"><span data-cfg="priceTwo">790</span> ₽</p>
+            <p>Два отдельных ролика — каждому своё поздравление. Никто не обидится.</p>
+            <a class="btn btn--line" href="#order" data-plan="Для двоих детей">Заказать</a>
+          </div>
+          <div class="price">
+            <h3>Для группы или класса</h3>
+            <p class="price__num"><span data-cfg="priceGroup">1 990</span> ₽</p>
+            <p>Одно видео на всех: Дед Мороз назовёт каждого ребёнка по имени. Для утренника и родительского чата.</p>
+            <a class="btn btn--line" href="#order" data-plan="Для группы или класса">Заказать</a>
+          </div>
+          <div class="price">
+            <h3>Взрослым и коллегам</h3>
+            <p class="price__num">от <span data-cfg="priceAdult">490</span> ₽</p>
+            <p>Маме, мужу, подруге, начальнику. Для коллектива или клиентов — от <span data-cfg="priceCorp">2 900</span> ₽.</p>
+            <a class="btn btn--line" href="#order" data-plan="Для взрослого / корпоративное">Заказать</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── Анкета ───────── -->
+    <section class="sec" id="order">
+      <div class="wrap wrap--narrow">
+        <h2>Анкета для Деда Мороза</h2>
+        <p class="sub">Заполните — и отправьте нам в мессенджер одной кнопкой. Платить сейчас ничего не нужно.</p>
+
+        <form class="form" id="form" novalidate>
+          <div class="row">
+            <label class="field">
+              <span>Как зовут ребёнка <i>— так, как его называют дома</i></span>
+              <input name="name" required maxlength="30" placeholder="Миша" autocomplete="off">
+            </label>
+            <label class="field field--sm">
+              <span>Возраст</span>
+              <input name="age" inputmode="numeric" maxlength="2" placeholder="6" autocomplete="off">
+            </label>
+          </div>
+
+          <fieldset class="seg">
+            <legend>Кому поздравление</legend>
+            <label><input type="radio" name="gender" value="мальчик" checked><span>Мальчику</span></label>
+            <label><input type="radio" name="gender" value="девочка"><span>Девочке</span></label>
+          </fieldset>
+
+          <div class="group">
+            <p class="group__title">Продолжите фразу Деда Мороза: «Я знаю, что ты…»</p>
+            <label class="field"><input name="fact1" maxlength="70" placeholder="научился кататься на велосипеде" autocomplete="off"></label>
+            <label class="field"><input name="fact2" maxlength="70" placeholder="помогаешь маме накрывать на стол" autocomplete="off"></label>
+            <label class="field"><input name="fact3" maxlength="70" placeholder="ходишь на плавание и не боишься нырять" autocomplete="off"></label>
+          </div>
+
+          <label class="field">
+            <span>Наказ от Деда Мороза <i>— необязательно</i></span>
+            <input name="advice" maxlength="90" placeholder="почаще убирай игрушки и вовремя ложись спать" autocomplete="off">
+          </label>
+
+          <label class="field">
+            <span>Заветное желание <i>— только если подарок точно будет под ёлкой</i></span>
+            <input name="gift" maxlength="50" placeholder="большой конструктор" autocomplete="off">
+          </label>
+
+          <label class="field">
+            <span>Кто передаёт привет</span>
+            <input name="from" maxlength="70" placeholder="мама Оля, папа Дима и бабушка Таня" autocomplete="off">
+          </label>
+
+          <label class="field">
+            <span>Тариф</span>
+            <select name="plan">
+              <option>Для одного ребёнка</option>
+              <option>Для двоих детей</option>
+              <option>Для группы или класса</option>
+              <option>Для взрослого / корпоративное</option>
+            </select>
+          </label>
+
+          <label class="check">
+            <input type="checkbox" name="photo">
+            <span>Добавить фото ребёнка в волшебную книгу <i>(пришлю в чат после анкеты)</i></span>
+          </label>
+
+          <p class="form__err" id="err" hidden>Впишите, пожалуйста, имя ребёнка.</p>
+
+          <div class="send" id="send">
+            <a class="btn btn--tg" id="go-tg" target="_blank" rel="noopener" hidden>Отправить в Telegram</a>
+            <a class="btn btn--wa" id="go-wa" target="_blank" rel="noopener" hidden>Отправить в WhatsApp</a>
+            <a class="btn btn--line" id="go-vk" target="_blank" rel="noopener" hidden>Написать ВКонтакте</a>
+            <a class="btn btn--line" id="go-max" target="_blank" rel="noopener" hidden>Написать в MAX</a>
+            <button class="btn btn--line" type="button" id="go-copy">Скопировать анкету</button>
+          </div>
+          <p class="form__note" id="note">Анкета откроется готовым сообщением в мессенджере — останется нажать «Отправить». Нажимая кнопку, вы соглашаетесь с <a href="privacy.html">политикой обработки данных</a>.</p>
+        </form>
+      </div>
+    </section>
+
+    <!-- ───────── Вопросы ───────── -->
+    <section class="sec sec--dark">
+      <div class="wrap wrap--narrow">
+        <h2>Частые вопросы</h2>
+        <details><summary>Сколько ждать?</summary><p>Обычно <span data-cfg="eta">1–2 часа</span> <span data-cfg="hours">с 9:00 до 22:00 по Москве</span>. Ночные заказы делаем утром. Перед самым Новым годом заказов много — лучше не откладывать на 30–31 декабря.</p></details>
+        <details><summary>Как оплатить?</summary><p>Переводом по СБП — после того, как вы посмотрели образец со своим ребёнком и он вам понравился. Чек пришлём.</p></details>
+        <details><summary>А если не понравится?</summary><p>Тогда вы ничего не платите. Текст и детали поправим бесплатно — напишите, что изменить.</p></details>
+        <details><summary>Как сделано видео?</summary><p>Это волшебная видеооткрытка в кино-стиле: изображение и голос Деда Мороза созданы с помощью компьютерной графики и нейросетей, а текст пишется под вашего ребёнка. Посмотрите образцы выше — вы получите именно такое качество.</p></details>
+        <details><summary>Как показать ребёнку?</summary><p>Пришлём обычный видеофайл: откроется на телефоне, планшете, телевизоре. Многие включают ролик на большом экране перед ёлкой или показывают «письмо, которое пришло маме на телефон».</p></details>
+        <details><summary>Что будет с фото и данными ребёнка?</summary><p>Имя, возраст и фото нужны только для ролика. Никому не передаём, в рекламе без вашего разрешения не используем, по просьбе удаляем сразу после заказа.</p></details>
+      </div>
+    </section>
+
+    <section class="sec final">
+      <div class="wrap wrap--narrow">
+        <h2>Чудо, в которое он поверит</h2>
+        <p class="sub">Успейте заказать по цене <span data-cfg="price">490</span> ₽ — до <span data-cfg="promoUntil">10 декабря</span>.</p>
+        <a class="btn btn--gold" href="#order">Заполнить анкету</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap">
+      <p class="brand brand--foot"><span class="brand__small">Волшебная почта</span><span class="brand__big">Деда Мороза</span></p>
+      <p id="foot-owner" hidden></p>
+      <p><a href="privacy.html">Политика обработки персональных данных</a></p>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

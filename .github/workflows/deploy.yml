@@ -6,6 +6,7 @@ on:
       - main
       - master
       - claude/trick-scooter-sales-site-4d8xfd
+      - claude/gracious-fermi-2n7sop
   workflow_dispatch:
 
 permissions:
@@ -29,6 +30,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # Студия роликов (код и тяжёлые клипы) на сайте не нужна — публикуем только страницы
+          rm -rf studio
           git add -A
           git commit -m "Сборка сайта из ${GITHUB_SHA}" --allow-empty
           git push --force origin HEAD:gh-pages
